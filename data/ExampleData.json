@@ -1,0 +1,18 @@
+[
+  {
+    "name": "Charles Checkpoint 1",
+    "river": "Charles",
+    "times": [
+      {"date": "12-31-2024", "discharge": "23", "precipication": "2"}, 
+      {"date": "1-1-2025", "discharge": "22", "precipication": "1"}
+    ]
+  }, 
+  {
+    "name": "Charles Checkpoint 2",
+    "river": "Charles",
+    "times": [
+      {"date": "12-31-2024", "discharge": "23", "precipication": "0"}, 
+      {"date": "1-1-2025", "discharge": "12", "precipication": "0"}
+    ]
+  }
+]
