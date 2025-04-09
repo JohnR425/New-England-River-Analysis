@@ -9,9 +9,10 @@
   <!-- Add custom element to <body> of your page -->
   <arcgis-embedded-map legend-enabled portal-url="https://umass-amherst.maps.arcgis.com" style="height:600px;width:700px;" item-id="7034db4a057a47c9b231b73fc1acc3b0" theme="dark" portal-url="https://umass-amherst.maps.arcgis.com" ></arcgis-embedded-map>
   <style>
-    path {
-      stroke: #cd3b6c;
-      stroke-width: 6;
+    .line {
+            fill: none;
+            stroke: steelblue;
+            stroke-width: 2;
     }
     /* 
     circle {
@@ -55,9 +56,12 @@
         console.log("Selected STATE: " + currentState);
       });
   </script>
-  <button onclick="execute()">Run!</button>
   <!-- TODO: Display list of all gauge points associated with the selected state -->
+
+  <!--Displays line graph using example array in js/lineGraph.js-->
+  <svg width="600" height="400"></svg>
   <script src="js/lineGraph.js"></script>
+
   <script src="js/table.js"></script>
 </body>
 

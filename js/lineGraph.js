@@ -1,68 +1,95 @@
-const execute = function() {
-    class LineGraph {
-      constructor(json) {
-          this.json = json;
-          this.stJohnRiverData = [];
-          json.forEach(x => {
-              if (x.site_name === "St. John River at Ninemile Bridge, Maine") {
-                  this.stJohnRiverData.push(x);
-              }
-          })
-          console.log(this.stJohnRiverData);
-      }
-
-      displayStJohnTmean() {
-        let svgWidth = 1200;
-        let svgHeight = 1200;
-        let xInterval = svgWidth / this.stJohnRiverData.length;  
-        let points = [];
-        let currIndex = 0
-        
-        this.stJohnRiverData.forEach(x => {
-          points.push({x: currIndex * xInterval, y: x.mean_discharge});
-          currIndex += 1;
-        });
-        console.log(points);
-
-        let lineFn = d3.line()
-                        .x(d => d.x)
-                        .y(d => d.y);
-
-        d3.select("body")
-            .append("svg")
-            .attr("width", svgWidth)
-            .attr("height", svgHeight);
+// Main function to draw the line chart
+    function drawLineChart(data) {
         const svg = d3.select("svg");
+        const width = +svg.attr("width");
+        const height = +svg.attr("height");
+        const margin = { top: 20, right: 30, bottom: 30, left: 40 };
+        const innerWidth = width - margin.left - margin.right;
+        const innerHeight = height - margin.top - margin.bottom;
+        const xAxisLabels = 10
 
-        svg.append("path")
-            .style("fill", "none")
-            .style("stroke", "black")
-            .style("stroke-width", 2)  
-            .attr("d", lineFn(points));
-        console.log(lineFn(points));
-        // let d3Scale = d3.scaleLinear().domain([0, d3.max(data)]).range([0, svgHeight]);
-        // let xAxis = d3.axisBottom().scale(d3Scale);
+        // Clear previous content
+        svg.selectAll("*").remove();
 
-          // svg.selectAll("path")
-          //     .data(data)
-          //     .join("path")
-          //     .attr("d", line(data))
-          //     // .attr("x", (d, i) => i * xInterval)
-          //     // .attr("y", d => d3Scale(d))
-          //     // .attr("width", d => d3Scale(d))
-          //     // .attr("height", 20)
-          //     // .style("fill", "steelblue");
-          
-          // svg.append("g")
-          //     .attr("transform", `translate(0, ${height})`)
-          //     .call(xAxis);
+        const g = svg.append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
 
+        // Set scales
+        const xScale = d3.scaleLinear()
+        .domain(d3.extent(data, (d, i) => i))
+        .range([0, innerWidth]);
 
-      }
-    }   
+        const yScale = d3.scaleLinear()
+        .domain([d3.min(data), d3.max(data)])
+        .range([innerHeight, 0]);
 
-    d3.json('data/milestone_dummy_data.json').then(function (data) {
-      const lineGraph = new LineGraph(data);
-      lineGraph.displayStJohnTmean();
-    });
-  }
+        // Define line generator
+        const line = d3.line()
+        .x((d, i) => xScale(i))
+        .y(d => yScale(d));
+
+        // X-axis
+        g.append("g")
+        .attr("transform", `translate(0,${innerHeight})`)
+        .call(d3.axisBottom(xScale).ticks(xAxisLabels));
+
+        // Y-axis
+        g.append("g")
+        .call(d3.axisLeft(yScale));
+
+        // Line path
+        g.append("path")
+        .datum(data)
+        .attr("class", "line")
+        .attr("d", line);
+    }
+
+    // Example usage:
+    let exampleData = [10, 20, 15, 30, 25, 40, 35,100,100,100];
+    exampleData = [  600.,   582.,   566.,   550.,   535.,   520.,   505.,   490.,
+        476.,   463.,   451.,   439.,   428.,   417.,   406.,   396.,
+        388.,   380.,   372.,   365.,   358.,   352.,   345.,   339.,
+        333.,   328.,   322.,   317.,   311.,   306.,   302.,   297.,
+        293.,   289.,   286.,   284.,   289.,   305.,   321.,   328.,
+        329.,   328.,   325.,   322.,   320.,   319.,   331.,   375.,
+        476.,   700.,  1160.,  1570.,  1860.,  2040.,  2160.,  2220.,
+        2210.,  2130.,  1990.,  1860.,  1740.,  1620.,  1520.,  1420.,
+        1350.,  1330.,  1450.,  1650.,  1740.,  1720.,  1640.,  1570.,
+        1500.,  1440.,  1370.,  1360.,  1490.,  1730.,  2020.,  2370.,
+        2700.,  2790.,  2760.,  2690.,  2610.,  2540.,  2480.,  2420.,
+        2380.,  2350.,  2340.,  2330.,  2320.,  2320.,  2330.,  2340.,
+        2360.,  2410.,  2580.,  3010.,  3830.,  5240.,  7630., 11400.,
+        17500., 26300., 28700., 23800., 18300., 14000., 11100., 10600.,
+        12000., 11000., 10100., 10500., 13500., 17100., 15400., 11800.,
+        9090.,  8300.,  8680.,  9250.,  8840.,  7430.,  5920.,  4740.,
+        4010.,  3660.,  3470.,  3290.,  2990.,  2660.,  2240.,  2000.,
+        2380.,  3280.,  2830.,  2150.,  1730.,  4110.,  5280.,  4180.,
+        3000.,  2230.,  2030.,  9920., 14700., 10400.,  9130.,  8850.,
+        6410.,  4350.,  3330.,  4280.,  5320.,  4220.,  3360.,  4270.,
+        6500.,  6920.,  5080.,  3540.,  2800.,  2350.,  1860.,  1550.,
+        1640.,  2910.,  3500.,  2830.,  2060.,  1480.,  1110.,   888.,
+        724.,   661.,  1750.,  1680.,  1130.,   815.,   651.,   531.,
+        443.,   383.,   572.,  2630.,  2000.,  1240.,   808.,   569.,
+        454.,   508.,   594.,   475.,   427.,   362.,   302.,   625.,
+        2140.,  1670.,  2640.,  2280.,  1460.,  1300.,  1240.,   887.,
+        671.,  1320.,  2340.,  1610.,  1040.,   724.,   600.,   577.,
+        470.,   397.,   350.,   461.,  5290., 10200.,  8590.,  6100.,
+        4130.,  2820.,  2000.,  1450.,  1110.,  1110.,  2470.,  2770.,
+        2290.,  2170.,  1830.,  1400.,  1500.,  1500.,  1710.,  1720.,
+        1260.,   946.,  1080.,  1820.,  1450.,  1050.,   789.,   638.,
+        538.,   473.,   426.,   385.,   361.,   328.,   296.,   271.,
+        257.,   247.,   250.,   221.,   216.,   220.,   277.,   351.,
+        558.,   884.,  1000.,   826.,   648.,   804.,  1480.,  1500.,
+        1150.,   871.,   692.,   565.,   479.,   421.,   383.,   363.,
+        358.,   382.,   380.,   391.,   361.,   338.,   368.,  2310.,
+        4380.,  3560.,  2830.,  5170.,  5960.,  4640.,  3470.,  2690.,
+        2190.,  1880.,  1720.,  1640.,  1610.,  1460.,  1280.,  1140.,
+        1010.,   906.,   817.,   743.,   688.,   654.,   650.,   805.,
+        922.,   808.,   828.,  1750.,  4850.,  5330.,  4710.,  3720.,
+        2960.,  2340.,  1840.,  1460.,  1210.,  1070.,   989.,   945.,
+        919.,   903.,   892.,   885.,   879.,   937.,  2060.,  3780.,
+        3920.,  4010.,  4160.,  3960.,  4810., 10200., 10900.,  7420.,
+        5010.,  3480.,  2630.,  2110.,  1770.,  1560.,  1400.,  1270.,
+        1160.,  1080.,  1010.,   955.,   916.,   887.,   868.,   851.,
+        838.,   829.,   828.,   859.,  1030.]
+    drawLineChart(exampleData);
