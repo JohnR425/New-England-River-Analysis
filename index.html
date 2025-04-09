@@ -37,8 +37,26 @@
 </head>
 
 <body>
+  <span>
+    <label>State:</label>
+    <select id="state">
+      <!-- TODO: Create script to query DB and create options based on DB query -->
+      <option value="MA">Massachusetts</option>
+      <option value="ME">Maine</option>
+      <option value="NH">New Hampshire</option>
+      <option value="RI">Rhode Island</option>
+    </select>
+  </span>
   <br />
+  <!-- Test script that prints current state whenever it changes -->
+  <script>
+      d3.select("#state").on("change", () => {
+        let currentState = d3.select("#state").node().value;
+        console.log("Selected STATE: " + currentState);
+      });
+  </script>
   <button onclick="execute()">Run!</button>
+  <!-- TODO: Display list of all gauge points associated with the selected state -->
   <script>
       const execute = function() {
         class LineGraph {
