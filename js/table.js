@@ -1,9 +1,17 @@
 TABLE_WIDTH = 800
 TABLE_HEIGHT = 1000
 
-d3.json('data/milestone_dummy_data.json').then(function (data) {
+d3.json(getGagesByState(d3.select("#state").node().value)).then(function (data) {
     setup(data);
+    console.log(d3.select("#state").node().value);
   });
+
+d3.select("#state").on("change", () => {
+  d3.json(getGagesByState(d3.select("#state").node().value)).then(function (data) {
+    setup(data);
+    console.log(d3.select("#state").node().value);
+  });
+});
 
 function setup (data) {
     console.log(data);

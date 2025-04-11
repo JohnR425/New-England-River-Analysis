@@ -44,16 +44,6 @@
 </head>
 
 <body>
-  <span>
-    <label>State:</label>
-    <select id="state">
-      <!-- TODO: Create script to query DB and create options based on DB query -->
-      <option value="MA">Massachusetts</option>
-      <option value="ME">Maine</option>
-      <option value="NH">New Hampshire</option>
-      <option value="RI">Rhode Island</option>
-    </select>
-  </span>
   <br />
   <!-- Test script that prints current state whenever it changes -->
   <script>
@@ -83,6 +73,18 @@
       </div>
     </div>
     <div id="rightColumn">
+      <div id="rightElement">
+        <span>
+          <label>State:</label>
+          <select id="state">
+            <!-- TODO: Create script to query DB and create options based on DB query -->
+            <option value="MA">Massachusetts</option>
+            <option value="ME">Maine</option>
+            <option value="NH">New Hampshire</option>
+            <option value="RI">Rhode Island</option>
+          </select>
+        </span>
+      </div>
       <div id="rightElement">
         <div id="table">
           <script src="js/table.js"></script>
