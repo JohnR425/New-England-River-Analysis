@@ -1,9 +1,10 @@
 TABLE_WIDTH = 800
 TABLE_HEIGHT = 1000
 
-d3.json('data/milestone_dummy_data.json').then(function (data) {
-    setup(data);
-  });
+//setup data
+getGagesByState("Rhode Island").then(function (data) {
+  setup(data);
+});
 
 function setup (data) {
     console.log(data);
