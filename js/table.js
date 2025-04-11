@@ -2,9 +2,9 @@ TABLE_WIDTH = 800
 TABLE_HEIGHT = 1000
 
 getGagesByState(d3.select("#state").node().value).then(function (data) {
-    setup(data);
-    console.log(d3.select("#state").node().value);
-  });
+  setup(data);
+  console.log(d3.select("#state").node().value);
+});
 
 d3.select("#state").on("change", () => {
   console.log(d3.select("#state").node().value)
