@@ -1,6 +1,9 @@
 // Main function to draw the line chart
     function drawLineChart(data) {
-        const svg = d3.select("svg");
+        const svg = d3.select("#line-graph")
+                        .append("svg")
+                        .attr("width", 600)
+                        .attr("height", 400);
         const width = +svg.attr("width");
         const height = +svg.attr("height");
         const margin = { top: 20, right: 30, bottom: 30, left: 40 };

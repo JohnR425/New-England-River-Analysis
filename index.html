@@ -4,15 +4,21 @@
 <head>
   <meta charset="utf-8">
   <title>River Discharge Model</title>
-  <!-- Add script to the <head> of your page to load the embeddable map component -->
-  <script type="module" src="https://js.arcgis.com/embeddable-components/4.32/arcgis-embeddable-components.esm.js"></script>
-  <!-- Add custom element to <body> of your page -->
-  <arcgis-embedded-map legend-enabled portal-url="https://umass-amherst.maps.arcgis.com" style="height:600px;width:700px;" item-id="7034db4a057a47c9b231b73fc1acc3b0" theme="dark" portal-url="https://umass-amherst.maps.arcgis.com" ></arcgis-embedded-map>
   <style>
     .line {
             fill: none;
             stroke: steelblue;
             stroke-width: 2;
+    }
+    #leftColumn {
+      display: flex;
+      flex-direction: column;
+      margin-right: 20px;
+    }
+    #rightColumn {
+      display: flex;
+      flex-direction: column;
+      margin-right: 20px; /* spacing between left and right */
     }
     /* 
     circle {
@@ -59,10 +65,34 @@
   <!-- TODO: Display list of all gauge points associated with the selected state -->
 
   <!--Displays line graph using example array in js/lineGraph.js-->
-  <svg width="600" height="400"></svg>
-  <script src="js/lineGraph.js"></script>
+  
+  <div id="container" style="display: flex;">
+    <div id="leftColumn">
+      <div id="topElement">
+        <div id="map">
+          <!-- Add script to the <head> of your page to load the embeddable map component -->
+          <script type="module" src="https://js.arcgis.com/embeddable-components/4.32/arcgis-embeddable-components.esm.js"></script>
+          <!-- Add custom element to <body> of your page -->
+          <arcgis-embedded-map legend-enabled portal-url="https://umass-amherst.maps.arcgis.com" style="height:600px;width:700px;" item-id="7034db4a057a47c9b231b73fc1acc3b0" theme="dark" portal-url="https://umass-amherst.maps.arcgis.com" ></arcgis-embedded-map>
+        </div>
+      </div>
+      <div id="bottomElement">
+        <div id="line-graph">
+          <script src="js/lineGraph.js"></script>
+        </div>
+      </div>
+    </div>
+    <div id="rightColumn">
+      <div id="rightElement">
+        <div id="table">
+          <script src="js/table.js"></script>
+        </div>
+      </div>
+    </div>
+  </div>
+  
 
-  <script src="js/table.js"></script>
+  
 </body>
 
 </html>
