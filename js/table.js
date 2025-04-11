@@ -1,4 +1,4 @@
-TABLE_WIDTH = 1200
+TABLE_WIDTH = 800
 TABLE_HEIGHT = 1000
 
 d3.json('data/milestone_dummy_data.json').then(function (data) {
@@ -7,7 +7,7 @@ d3.json('data/milestone_dummy_data.json').then(function (data) {
 
 function setup (data) {
     console.log(data);
-    const table = d3.select("body")
+    const table = d3.select("#table")
                     .append("table")
                     .attr("id", "gauge-table")
                     .attr("width", TABLE_WIDTH)
