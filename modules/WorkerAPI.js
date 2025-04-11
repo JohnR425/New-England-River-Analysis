@@ -1,4 +1,4 @@
-async function getGageByState(stateName) { 
+export async function getGagesByState(stateName) { 
     let url = `https://db-worker.nwai.workers.dev/gages?state=${stateName}`
     let gageInfo = await fetch(url)
         .then(res => res.json())
@@ -9,7 +9,6 @@ async function getGageByState(stateName) {
     console.log("Fetched", gageInfo.length, "gages from Database with parameter", stateName)
     return gageInfo
 }
-getGageByState("Maine")
 
 // fetch('https://db-worker.nwai.workers.dev/states').then(res => res.json()).then(console.log);
 
