@@ -27,24 +27,26 @@ function setupTable (data) {
     const rows = tableBody.selectAll("tr")
                         .data(data)
                         .enter()
-                        .append("tr");
-
-    //Adding selection by row
-    rows.on("click", function() {
-      d3.selectAll("#table tr").style("background-color", "white")
-                                .attr("id", null);
-      
-      d3.select(this).style("background-color", "lightblue")
-                      .attr("id", "selected-gage");
-      
-      //Accessing the data in the selected row:
-      let dataValues = [];
-      d3.select("#selected-gage").selectAll("td").each(function() {
-        dataValues.push(d3.select(this).text());
-      });
-      
-      console.log("Selected Row Data: ", dataValues);
-    });
+                        .append("tr")
+                        .style("background-color", (d, i) => i == 0 ? "lightblue" : "white")
+                        .attr("id", (d, i) => i == 0 ? "selected-gage" : null)
+                        //Adding Row Selection on Click
+                        .on("click", function() {
+                          d3.selectAll("#table tr").style("background-color", "white")
+                                                    .attr("id", null);
+                          
+                          d3.select(this).style("background-color", "lightblue")
+                                          .attr("id", "selected-gage");
+                          
+                          //Accessing the data in the selected row:
+                          let dataValues = [];
+                          d3.select("#selected-gage").selectAll("td").each(function() {
+                            dataValues.push(d3.select(this).text());
+                          });
+                          
+                          updateLineChart();
+                          console.log("Selected Row Data: ", dataValues);
+                        });
 
     rows.selectAll("td")
             .data(gauge => headers.map(key => gauge[key]))

@@ -9,10 +9,11 @@ getGagesByState(selectedState).then(function (data) {
   });
 
 //Setup Line Chart
-getStatsByGageID("01010070", "2010-01-01", "2010-12-31")
+getStatsByGageID("01094400", "2010-01-01", "2010-12-31")
 .then(function (data) {
     console.log("data", data);
     let discharges = data.map(elem => {return elem.mean_discharge});
+    let precipitation = data.map(elem => {return elem.precipitation});
     console.log("discharges", discharges);
-    setupLineChart(discharges);
+    setupLineChart(discharges, precipitation);
 });

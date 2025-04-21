@@ -1,5 +1,8 @@
 // Main function to draw the line chart
-    function setupLineChart(data) {
+    function setupLineChart(dischargeData, precipData) {
+        //Remove previous line graphs
+        d3.select("#line-graph").selectAll("svg").remove();
+
         const svg = d3.select("#line-graph")
                         .append("svg")
                         .attr("width", 600)
@@ -19,11 +22,11 @@
 
         // Set scales
         const xScale = d3.scaleLinear()
-        .domain(d3.extent(data, (d, i) => i))
+        .domain(d3.extent(dischargeData, (d, i) => i))
         .range([0, innerWidth]);
 
         const yScale = d3.scaleLinear()
-        .domain([d3.min(data), d3.max(data)])
+        .domain([d3.min(dischargeData), d3.max(dischargeData)])
         .range([innerHeight, 0]);
 
         // Define line generator
@@ -58,9 +61,35 @@
         g.append("g")
         .call(d3.axisLeft(yScale));
 
-        // Line path
+        // Discharge
         g.append("path")
-        .datum(data)
+        .datum(dischargeData)
         .attr("class", "line")
         .attr("d", line);
+
+        // Precipitation
+        g.append("path")
+        .datum(precipData)
+        .attr("class", "line")
+        .attr("d", line)
+        .style("stroke", "red");
+    }
+
+    //Updates line chart when a new criteria has been selected
+    function updateLineChart() {
+        //dataValues is an array containing the string values containining data for each corresponding column for an entry
+        let dataValues = [];
+        d3.select("#selected-gage").selectAll("td").each(function() {
+            dataValues.push(d3.select(this).text());
+        });
+
+        getStatsByGageID(dataValues[0], "2010-01-01", "2010-12-31")
+            .then(function (data) {
+                console.log("data", data);
+                let discharges = data.map(elem => {return elem.mean_discharge});
+                let precipitation = data.map(elem => {return elem.ppt});
+                console.log("discharges", discharges);
+                console.log("precip", precipitation);
+                setupLineChart(discharges, precipitation);
+            });
     }
