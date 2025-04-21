@@ -41,6 +41,8 @@
     } */
   </style>
   <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="js/table.js"></script>
+  <script src="js/lineGraph.js"></script>
   <script src="modules/WorkerAPI.js"></script>
 </head>
 
@@ -68,9 +70,7 @@
         </div>
       </div>
       <div id="bottomElement">
-        <div id="line-graph">
-          <script src="js/lineGraph.js"></script>
-        </div>
+        <div id="line-graph"></div>
       </div>
     </div>
     <div id="rightColumn">
@@ -87,14 +87,26 @@
         </span>
       </div>
       <div id="rightElement">
-        <div id="table" style="height: 1000px; overflow-y: auto;">
-          <script src="js/table.js"></script>
-        </div>
+        <div id="table" style="height: 1000px; overflow-y: auto;"></div>
       </div>
     </div>
   </div>
-  
 
+<label>From: <input type="date" id="startDate"></label>
+<label>To: <input type="date" id="endDate"></label>
+
+<script>
+  d3.select("#startDate").on("change", function() {
+    console.log("Start date:", this.value);
+  });
+
+  d3.select("#endDate").on("change", function() {
+    console.log("End date:", this.value);
+  });
+</script>
+
+  
+  <script src="js/script.js"></script>
   
 </body>
 

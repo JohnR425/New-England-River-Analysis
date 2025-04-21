@@ -1,20 +1,7 @@
 TABLE_WIDTH = 800
 TABLE_HEIGHT = 1000
 
-getGagesByState(d3.select("#state").node().value).then(function (data) {
-  setup(data);
-  console.log(d3.select("#state").node().value);
-});
-
-d3.select("#state").on("change", () => {
-  console.log(d3.select("#state").node().value)
-  getGagesByState(d3.select("#state").node().value).then(function (data) {
-    setup(data);
-    console.log(d3.select("#state").node().value);
-  });
-});
-
-function setup (data) {
+function setupTable (data) {
   d3.select("#table").html("");
 
     console.log(data);
@@ -66,4 +53,14 @@ function setup (data) {
             .text(d => d)
             .style("border", "1px solid black")
             .style("padding", "5px");
+
+    //Makes table update whenever the selected state changes
+    let selectedState = d3.select("#state").node().value;
+    d3.select("#state").on("change", () => {
+      console.log(selectedState)
+      getGagesByState(selectedState).then(function (data) {
+        setup(data);
+        console.log(selectedState);
+      });
+    });
 }
