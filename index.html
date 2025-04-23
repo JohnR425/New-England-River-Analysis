@@ -43,22 +43,12 @@
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <script src="js/table.js"></script>
   <script src="js/lineGraph.js"></script>
+  <script src="js/tableSelection.js"></script>
   <script src="modules/WorkerAPI.js"></script>
 </head>
 
 <body>
   <br />
-  <!-- Test script that prints current state whenever it changes -->
-  <script>
-      d3.select("#state").on("change", () => {
-        let currentState = d3.select("#state").node().value;
-        console.log("Selected STATE: " + currentState);
-      });
-  </script>
-  <!-- TODO: Display list of all gauge points associated with the selected state -->
-
-  <!--Displays line graph using example array in js/lineGraph.js-->
-  
   <div id="container" style="display: flex;">
     <div id="leftColumn">
       <div id="topElement">
@@ -77,12 +67,7 @@
       <div id="rightElement">
         <span>
           <label>State:</label>
-          <select id="state">
-            <!-- TODO: Create script to query DB and create options based on DB query -->
-            <option value="Massachusetts">Massachusetts</option>
-            <option value="Maine">Maine</option>
-            <option value="New Hampshire">New Hampshire</option>
-            <option value="Rhode Island">Rhode Island</option>
+          <select id="state-selector">
           </select>
         </span>
       </div>
