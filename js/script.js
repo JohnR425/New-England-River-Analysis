@@ -1,5 +1,4 @@
 //Creating Table
-
 let selectedState = d3.select("#state").node().value;
 
 //Setup Table

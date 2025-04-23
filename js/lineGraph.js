@@ -109,6 +109,9 @@ function updateLineChartData(dischargeData, precipData, gageName) {
 }
 
 
+/**
+ * Note: Filters out Null Values
+ */
 function updateLineChart() {
     let dataValues = [];
     d3.select("#selected-gage").selectAll("td").each(function() {
@@ -117,8 +120,14 @@ function updateLineChart() {
 
     getStatsByGageID(dataValues[0], "2010-01-01", "2010-12-31")
         .then(function (data) {
-            let discharges = data.map(elem => elem.mean_discharge);
-            let precipitation = data.map(elem => elem.ppt);
-            updateLineChartData(discharges, precipitation, dataValues[1]); // assuming gage name at index 1
+            // Filter out rows with null or undefined values
+            const validData = data.filter(e =>
+                e.mean_discharge != null && e.ppt != null
+            );
+
+            const discharges = validData.map(e => e.mean_discharge);
+            const precipitation = validData.map(e => e.ppt);
+
+            updateLineChartData(discharges, precipitation, dataValues[1]); // assuming gage name is at index 1
         });
 }
