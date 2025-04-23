@@ -15,5 +15,5 @@ getStatsByGageID("01094400", "2010-01-01", "2010-12-31")
     let discharges = data.map(elem => {return elem.mean_discharge});
     let precipitation = data.map(elem => {return elem.precipitation});
     console.log("discharges", discharges);
-    setupLineChart(discharges, precipitation);
+    setupLineChart(discharges, precipitation, "rivername");
 });

@@ -28,7 +28,7 @@ async function getStatsByGageID(gageID, beginDate, endDate) {
  * @returns Array of States
  */
 async function getStates() { 
-    let url = `https://db-worker.nwai.workers.dev/states}`
+    let url = `https://db-worker.nwai.workers.dev/states`
     let data = await fetch(url)
         .then(res => res.json())
         .catch((error) => {
