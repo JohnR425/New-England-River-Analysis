@@ -3,8 +3,6 @@ TABLE_HEIGHT = 1000
 
 function setupTable (data) {
   d3.select("#table").html("");
-
-    console.log(data);
     const table = d3.select("#table")
                     .append("table")
                     .attr("id", "gauge-table")
@@ -45,7 +43,6 @@ function setupTable (data) {
                           });
                           
                           updateLineChart();
-                          console.log("Selected Row Data: ", dataValues);
                         });
 
     rows.selectAll("td")
@@ -55,14 +52,4 @@ function setupTable (data) {
             .text(d => d)
             .style("border", "1px solid black")
             .style("padding", "5px");
-
-    //Makes table update whenever the selected state changes
-    let selectedState = d3.select("#state").node().value;
-    d3.select("#state").on("change", () => {
-      console.log(selectedState)
-      getGagesByState(selectedState).then(function (data) {
-        setup(data);
-        console.log(selectedState);
-      });
-    });
 }
