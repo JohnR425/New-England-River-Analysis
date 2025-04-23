@@ -23,6 +23,18 @@ async function getStatsByGageID(gageID, beginDate, endDate) {
     return stats
 }
 
+async function getStates() { 
+    let url = `https://db-worker.nwai.workers.dev/states}`
+    let data = await fetch(url)
+        .then(res => res.json())
+        .catch((error) => {
+            console.log("error:", error);
+            return []
+        })
+    console.log("Fetched", data.length, "states from Database")
+    return data
+}
+
 // RETURNS
 
 // {
