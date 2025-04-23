@@ -6,14 +6,6 @@ getStates().then(function (data) {
     //Setup Table
     setupTable(data);
 
-//Setup Line Chart
-getStatsByGageID("01094400", "2010-01-01", "2010-12-31")
-.then(function (data) {
-    console.log("data", data);
-    let discharges = data.map(elem => {return elem.mean_discharge});
-    let precipitation = data.map(elem => {return elem.precipitation});
-    console.log("discharges", discharges);
-    setupLineChart(discharges, precipitation, "rivername");
     //Setup Line Chart
     getStatsByGageID(data[0].site_number, "2010-01-01", "2010-12-31")
     .then(function (data) {
