@@ -1,92 +1,124 @@
 // Main function to draw the line chart
-    function setupLineChart(dischargeData, precipData) {
-        //Remove previous line graphs
-        d3.select("#line-graph").selectAll("svg").remove();
+function setupLineChart() {
+    const svg = d3.select("#line-graph")
+        .append("svg")
+        .attr("width", 600)
+        .attr("height", 400);
 
-        const svg = d3.select("#line-graph")
-                        .append("svg")
-                        .attr("width", 600)
-                        .attr("height", 400);
-        const width = +svg.attr("width");
-        const height = +svg.attr("height");
-        const margin = { top: 20, right: 30, bottom: 60, left: 60 };
-        const innerWidth = width - margin.left - margin.right;
-        const innerHeight = height - margin.top - margin.bottom;
-        const xAxisLabels = 10
+    const margin = { top: 60, right: 30, bottom: 60, left: 60 };
+    const width = +svg.attr("width");
+    const height = +svg.attr("height");
+    const innerWidth = width - margin.left - margin.right;
+    const innerHeight = height - margin.top - margin.bottom;
 
-        // Clear previous content
-        svg.selectAll("*").remove();
+    const g = svg.append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`)
+        .attr("id", "chart-group");
 
-        const g = svg.append("g")
-        .attr("transform", `translate(${margin.left},${margin.top})`);
+    // Add axis groups
+    g.append("g").attr("class", "x-axis").attr("transform", `translate(0,${innerHeight})`);
+    g.append("g").attr("class", "y-axis");
 
-        // Set scales
-        const xScale = d3.scaleLinear()
+    // Add lines
+    g.append("path").attr("class", "line-discharge");
+    g.append("path").attr("class", "line-precip");
+
+    // Add title
+    svg.append("text")
+        .attr("class", "chart-title")
+        .attr("x", width / 2)
+        .attr("y", margin.top / 2)
+        .attr("text-anchor", "middle")
+        .style("font-size", "16px")
+        .style("font-weight", "bold");
+
+    // Add axis labels
+    g.append("text")
+        .attr("class", "x-label")
+        .attr("text-anchor", "middle")
+        .attr("x", innerWidth / 2)
+        .attr("y", innerHeight + 40)
+        .text("Day in 2010");
+
+    g.append("text")
+        .attr("class", "y-label")
+        .attr("text-anchor", "middle")
+        .attr("transform", "rotate(-90)")
+        .attr("x", -innerHeight / 2)
+        .attr("y", -40)
+        .text("Mean Discharge (m³)");
+}
+
+
+function updateLineChartData(dischargeData, precipData, gageName) {
+    const svg = d3.select("#line-graph").select("svg");
+    const margin = { top: 60, right: 30, bottom: 60, left: 60 };
+    const width = +svg.attr("width");
+    const height = +svg.attr("height");
+    const innerWidth = width - margin.left - margin.right;
+    const innerHeight = height - margin.top - margin.bottom;
+
+    const xScale = d3.scaleLinear()
         .domain(d3.extent(dischargeData, (d, i) => i))
         .range([0, innerWidth]);
 
-        const yScale = d3.scaleLinear()
-        .domain([d3.min(dischargeData), d3.max(dischargeData)])
+    const yScale = d3.scaleLinear()
+        .domain([Math.min(d3.min(dischargeData), d3.min(precipData)),
+                 Math.max(d3.max(dischargeData), d3.max(precipData))])
         .range([innerHeight, 0]);
 
-        // Define line generator
-        const line = d3.line()
+    const line = d3.line()
         .x((d, i) => xScale(i))
         .y(d => yScale(d));
 
-        // X-axis
-        g.append("g")
-        .attr("transform", `translate(0,${innerHeight})`)
-        .call(d3.axisBottom(xScale).ticks(xAxisLabels));
+    const g = svg.select("#chart-group");
 
-        g.append("text")
-            .attr("text-anchor", "middle")
-            .attr("x", innerWidth/2)
-            .attr("y", innerHeight + margin.bottom-20)
-            .text("Day in 2010")
-            .style("font-size", "12px")
-            .style("fill", "#000000")
+    // Update axes
+    g.select(".x-axis")
+        .transition()
+        .duration(1000)
+        .call(d3.axisBottom(xScale));
 
-        g.append("text")
-            .attr("text-anchor", "middle")
-            .attr("transform", `rotate(-90)`)
-            .attr("x", -innerHeight / 2)
-            .attr("y", -margin.left + 10) 
-            .text("Mean Discharge (m^3)") 
-            .style("font-size", "12px")
-            .style("fill", "#000000");
-
-
-        // Y-axis
-        g.append("g")
+    g.select(".y-axis")
+        .transition()
+        .duration(1000)
         .call(d3.axisLeft(yScale));
 
-        // Discharge
-        g.append("path")
+    // Update title
+    svg.select(".chart-title")
+        .text(`Discharge and Precipitation for ${gageName}`);
+
+    // Update lines with transitions
+    g.select(".line-discharge")
         .datum(dischargeData)
-        .attr("class", "line")
-        .attr("d", line);
-
-        // Precipitation
-        g.append("path")
-        .datum(precipData)
-        .attr("class", "line")
+        .transition()
+        .duration(1000)
         .attr("d", line)
-        .style("stroke", "red");
-    }
+        .attr("fill", "none")
+        .attr("stroke", "steelblue")
+        .attr("stroke-width", 2);
 
-    //Updates line chart when a new criteria has been selected
-    function updateLineChart() {
-        //dataValues is an array containing the string values containining data for each corresponding column for an entry
-        let dataValues = [];
-        d3.select("#selected-gage").selectAll("td").each(function() {
-            dataValues.push(d3.select(this).text());
+    g.select(".line-precip")
+        .datum(precipData)
+        .transition()
+        .duration(1000)
+        .attr("d", line)
+        .attr("fill", "none")
+        .attr("stroke", "red")
+        .attr("stroke-width", 2);
+}
+
+
+function updateLineChart() {
+    let dataValues = [];
+    d3.select("#selected-gage").selectAll("td").each(function() {
+        dataValues.push(d3.select(this).text());
+    });
+
+    getStatsByGageID(dataValues[0], "2010-01-01", "2010-12-31")
+        .then(function (data) {
+            let discharges = data.map(elem => elem.mean_discharge);
+            let precipitation = data.map(elem => elem.ppt);
+            updateLineChartData(discharges, precipitation, dataValues[1]); // assuming gage name at index 1
         });
-
-        getStatsByGageID(dataValues[0], "2010-01-01", "2010-12-31")
-            .then(function (data) {
-                let discharges = data.map(elem => {return elem.mean_discharge});
-                let precipitation = data.map(elem => {return elem.ppt});
-                setupLineChart(discharges, precipitation);
-            });
-    }
+}
