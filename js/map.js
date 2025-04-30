@@ -88,6 +88,23 @@ map.on('click', (event) => {
     });
     
     //Extract site number of selected pop-up
-    console.log(feature.properties["Site_Number"])
-    ;
+    console.log(feature.properties["Site_Number"]);
+
+    console.log(feature.properties["State"]);
+    getGagesByState(feature.properties["State"]).then(function (data) {
+        setupTable(data);
+        d3.select("#state-selector")
+        .property("value", feature.properties["State"]);
+
+        const searchText = feature.properties["Site_Number"];
+
+        d3.selectAll("#gauge-table tr").each(function() {
+            const row = d3.select(this);
+            if (row.text().includes(searchText)) {
+            console.log("Found row:", row.node());
+            // You can style it, remove it, etc.
+            row.style("background-color", "yellow");
+            }
+        });
+      });
 });

@@ -2,6 +2,7 @@ TABLE_WIDTH = 800
 TABLE_HEIGHT = 1000
 
 function setupTable (data) {
+  console.log("TABLE DATA", data);
   d3.select("#table").html("");
     const table = d3.select("#table")
                     .append("table")
@@ -23,7 +24,7 @@ function setupTable (data) {
     const tableBody = table.append("tbody");
 
     const rows = tableBody.selectAll("tr")
-                        .data(data.slice(0, 6))
+                        .data(data)
                         .enter()
                         .append("tr")
                         .style("background-color", (d, i) => i == 0 ? "lightblue" : "white")
@@ -53,4 +54,8 @@ function setupTable (data) {
             .text(d => d)
             .style("border", "1px solid black")
             .style("padding", "5px");
+}
+
+function selectRowByID(id) {
+
 }
