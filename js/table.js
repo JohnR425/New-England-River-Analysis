@@ -42,7 +42,7 @@ function setupTable (data) {
                             dataValues.push(d3.select(this).text());
                           });
                           
-                          updateLineChart();
+                          updateLineCharts();
                           updateGageSummary(dataValues);
                         });
 
