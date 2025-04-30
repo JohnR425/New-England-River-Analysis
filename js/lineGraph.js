@@ -3,7 +3,7 @@
 function initializeCharts() {
     setupLineCharts();
 
-    getStatsByGageID("12345", "2010-01-01", "2010-12-31")
+    getStatsByGageID("12345", "2010-01-01", "2010-12-31") // initialize with default dates
         .then(function (data) {
             const validData = data.filter(e => e.mean_discharge != null && e.ppt != null);
 
@@ -55,7 +55,7 @@ function setupLineCharts() {
         .attr("text-anchor", "middle")
         .attr("x", innerWidth / 2)
         .attr("y", innerHeight + 40)
-        .text("Day in 2010");
+        .text("Date");
 
     gDischarge.append("text")
         .attr("class", "y-label")
@@ -109,7 +109,7 @@ function setupLineCharts() {
         .text("Precipitation (mm)");
 }
 
-function updateDischargeChart(discharges) {
+function updateDischargeChart(discharges, parsedDates) {
     const svgDischarge = d3.select("#line-graph-discharge").select("svg");
 
     const margin = { top: 60, right: 30, bottom: 60, left: 60 };
@@ -118,9 +118,9 @@ function updateDischargeChart(discharges) {
     const innerWidth = width - margin.left - margin.right;
     const innerHeight = height - margin.top - margin.bottom;
 
-    const xScale = d3.scaleLinear()
-        .domain([0, discharges.length - 1])
-        .range([0, innerWidth]);
+    const xScale = d3.scaleTime()
+    .domain(d3.extent(parsedDates))
+    .range([0, innerWidth]);
 
     const yScaleDischarge = d3.scaleLinear()
         .domain([d3.min(discharges), d3.max(discharges)])
@@ -128,16 +128,33 @@ function updateDischargeChart(discharges) {
         .range([innerHeight, 0]);
 
     const lineDischarge = d3.line()
-        .x((d, i) => xScale(i))
+        .x((d, i) => xScale(parsedDates[i]))
         .y(d => yScaleDischarge(d));
 
     const gDischarge = svgDischarge.select("#chart-group-discharge");
 
+    const dateSpan = (parsedDates[parsedDates.length - 1] - parsedDates[0]) / (1000 * 60 * 60 * 24); // in days
+    let xFormat;
+
+    if (dateSpan <= 30) {
+        xFormat = d3.timeFormat("%b %d"); // e.g. Apr 30
+    } else if (dateSpan <= 365) {
+        xFormat = d3.timeFormat("%b %Y"); // e.g. Apr 2023
+    } else {
+        xFormat = function(date) {
+            if (date.getMonth() === 0) {
+                return d3.timeFormat("%Y")(date); // Just the year if January
+            } else {
+                return d3.timeFormat("%b")(date); // e.g. Feb 2024
+            }
+        };
+    }
+    
     // Update axes
     gDischarge.select(".x-axis")
         .transition()
         .duration(1000)
-        .call(d3.axisBottom(xScale));
+        .call(d3.axisBottom(xScale).tickFormat(xFormat));
 
     gDischarge.select(".y-axis")
         .transition()
@@ -155,7 +172,7 @@ function updateDischargeChart(discharges) {
         .attr("stroke-width", 2);
 }
 
-function updatePrecipitationChart(precipitation) {
+function updatePrecipitationChart(precipitation, parsedDates) {
     const svgPrecipitation = d3.select("#line-graph-precipitation").select("svg");
 
     const margin = { top: 60, right: 30, bottom: 60, left: 60 };
@@ -164,9 +181,10 @@ function updatePrecipitationChart(precipitation) {
     const innerWidth = width - margin.left - margin.right;
     const innerHeight = height - margin.top - margin.bottom;
 
-    const xScale = d3.scaleLinear()
-        .domain([0, precipitation.length - 1])
-        .range([0, innerWidth]);
+    
+    const xScale = d3.scaleTime()
+    .domain(d3.extent(parsedDates))
+    .range([0, innerWidth]);
 
     const yScalePrecipitation = d3.scaleLinear()
         .domain([d3.min(precipitation), d3.max(precipitation)])
@@ -174,16 +192,33 @@ function updatePrecipitationChart(precipitation) {
         .range([innerHeight, 0]);
 
     const linePrecipitation = d3.line()
-        .x((d, i) => xScale(i))
+        .x((d, i) => xScale(parsedDates[i]))
         .y(d => yScalePrecipitation(d));
 
     const gPrecipitation = svgPrecipitation.select("#chart-group-precipitation");
 
+    const dateSpan = (parsedDates[parsedDates.length - 1] - parsedDates[0]) / (1000 * 60 * 60 * 24); // in days
+    let xFormat;
+
+    if (dateSpan <= 30) {
+        xFormat = d3.timeFormat("%b %d"); // e.g. Apr 30
+    } else if (dateSpan <= 365) {
+        xFormat = d3.timeFormat("%b %Y"); // e.g. Apr 2023
+    } else {
+        xFormat = function(date) {
+            if (date.getMonth() === 0) {
+                return d3.timeFormat("%Y")(date); // Just the year if January
+            } else {
+                return d3.timeFormat("%b")(date); // e.g. Feb 2024
+            }
+        };
+    }
+    
     // Update axes
     gPrecipitation.select(".x-axis")
         .transition()
         .duration(1000)
-        .call(d3.axisBottom(xScale));
+        .call(d3.axisBottom(xScale).tickFormat(xFormat));
 
     gPrecipitation.select(".y-axis")
         .transition()
@@ -207,25 +242,36 @@ function updatePrecipitationChart(precipitation) {
 function updateLineCharts() {
     // Get the selected gage's data from the table
     let dataValues = [];
+    let startDate =  d3.select("#startDateLabel").text() || "2010-01-01" // default
+    let endDate = d3.select("#endDateLabel").text()  || "2010-12-31" // default 
+
     d3.select("#selected-gage").selectAll("td").each(function () {
         dataValues.push(d3.select(this).text());
     });
+
+    console.log("START DATE", startDate)
+    console.log("END DATE", endDate)
+
     // Ensure a gage is selected
     if (dataValues.length === 0) {
         console.warn("No gage selected.");
         return;
     }
     // Fetch data for the selected gage
-    getStatsByGageID(dataValues[0], "2010-01-01", "2010-12-31")
+    
+    getStatsByGageID(dataValues[0], startDate, endDate)
         .then(function (data) {
+
+
             // Filter out rows with null or undefined values
             const validData = data.filter(e =>
                 e.mean_discharge != null && e.ppt != null
             );
+            const dates = validData.map(e => new Date(e.date)); // Parse to Date objects
             const discharges = validData.map(e => e.mean_discharge);
             const precipitation = validData.map(e => e.ppt);
 
-            updateDischargeChart(discharges);
-            updatePrecipitationChart(precipitation);
+            updateDischargeChart(discharges, dates);
+            updatePrecipitationChart(precipitation, dates);
         });
 }

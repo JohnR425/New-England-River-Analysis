@@ -5,6 +5,7 @@
   <meta charset="utf-8">
   <title>River Discharge Model</title>
   <style>
+    
     .line {
             fill: none;
             stroke: steelblue;
@@ -79,9 +80,44 @@
       letter-spacing: 1px;
       font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; 
     } */
+
+  .slider-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    width: 100%;
+    max-width: 600px;
+  }
+
+  .slider-block {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .slider-left {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25em;
+  }
+
+  input[type="range"] {
+    width: 100%;
+  }
+
+  input[type="date"] {
+    margin-left: 1em;
+    min-width: 130px;
+  }
+
+  label {
+    font-weight: bold;
+  }
   </style>
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <script src="js/table.js"></script>
+  <script type="module" src="js/dataFromMap.js" defer></script>
   <script src="js/lineGraph.js"></script>
   <script src="js/tableSelection.js"></script>
   <script src="js/gageSummary.js"></script>
@@ -109,7 +145,7 @@
       <div id="bottomElement">
         <div id="line-graph-discharge"></div>
       </div>
-      <div id="bottomElement">
+      <div class="bottomElement">
         <div id="line-graph-precipitation"></div>
       </div>
     </div>
@@ -127,19 +163,111 @@
     </div>
   </div>
 
-<label>From: <input type="date" id="startDate"></label>
-<label>To: <input type="date" id="endDate"></label>
+<!-- <label>From:  <input type="date" id="startDate" min="2010-01-01" max="2023-12-31"></label>
+<label>To: <input type="date" id="endDate" min="2010-01-01" max="2023-12-31"></label>
 
 <script>
   d3.select("#startDate").on("change", function() {
     console.log("Start date:", this.value);
+
   });
 
   d3.select("#endDate").on("change", function() {
     console.log("End date:", this.value);
-  });
-</script>
 
+  });
+</script> -->
+
+<div class="slider-container">
+  <div class="slider-container">
+    <div class="slider-block">
+      <div class="slider-left">
+        <label for="startSlider">From:</label>
+        <input type="range" id="startSlider" min="0" max="5113" value="0">
+        <span id="startDateLabel"></span>
+      </div>
+      <input type="date" id="startDateInput" min="2010-01-01" max="2023-12-31">
+    </div>
+  
+    <div class="slider-block">
+      <div class="slider-left">
+        <label for="endSlider">To:</label>
+        <input type="range" id="endSlider" min="0" max="5113" value="365">
+        <span id="endDateLabel"></span>
+      </div>
+      <input type="date" id="endDateInput" min="2010-01-01" max="2023-12-31">
+    </div>
+  </div>
+</div>
+
+<script>
+  const baseDate = new Date("2010-01-01");
+
+  const startSlider = document.getElementById("startSlider");
+  const endSlider = document.getElementById("endSlider");
+  const startLabel = document.getElementById("startDateLabel");
+  const endLabel = document.getElementById("endDateLabel");
+  const startInput = document.getElementById("startDateInput");
+  const endInput = document.getElementById("endDateInput");
+
+  function formatDate(date) {
+    return date.toISOString().split("T")[0];
+  }
+
+  function offsetToDate(offset) {
+    const d = new Date(baseDate);
+    d.setDate(d.getDate() + offset);
+    return d;
+  }
+
+  function dateToOffset(dateStr) {
+    const date = new Date(dateStr);
+    return Math.floor((date - baseDate) / (1000 * 60 * 60 * 24));
+  }
+
+  function syncFromSliders() { // always called whenever the date changes
+    let startOffset = parseInt(startSlider.value);
+    let endOffset = parseInt(endSlider.value);
+
+    // Clamp values to each other
+    if (startOffset > endOffset) startOffset = endOffset;
+    if (endOffset < startOffset) endOffset = startOffset;
+
+    const startDate = offsetToDate(startOffset);
+    const endDate = offsetToDate(endOffset);
+
+    startSlider.value = startOffset;
+    endSlider.value = endOffset;
+
+    startLabel.textContent = formatDate(startDate);
+    endLabel.textContent = formatDate(endDate);
+
+    startInput.value = formatDate(startDate);
+    endInput.value = formatDate(endDate);
+
+    console.log("UPDATING LINE CHARTS")
+    updateLineCharts() // UPDATE LINE CHARTS
+  }
+
+  function syncFromInputs() {
+    const startOffset = dateToOffset(startInput.value);
+    const endOffset = dateToOffset(endInput.value);
+
+    // Clamp to allowed range
+    if (!isNaN(startOffset)) startSlider.value = Math.min(startOffset, endSlider.value);
+    if (!isNaN(endOffset)) endSlider.value = Math.max(endOffset, startSlider.value);
+
+    syncFromSliders();
+  }
+
+  startSlider.addEventListener("mouseup", syncFromSliders);
+  endSlider.addEventListener("mouseup", syncFromSliders);
+  startInput.addEventListener("change", syncFromInputs);
+  endInput.addEventListener("change", syncFromInputs);
+
+  // Initial load
+  syncFromSliders();
+  </script>
   
 <script src="js/script.js"></script>
   

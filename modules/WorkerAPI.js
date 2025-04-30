@@ -23,6 +23,19 @@ async function getStatsByGageID(gageID, beginDate, endDate) {
     return stats
 }
 
+async function getGageInfoByGageID(gageID) { 
+    let url = `https://db-worker.nwai.workers.dev/gageInfo?site_number=${gageID}`
+    let stats = await fetch(url)
+        .then(res => res.json())
+        .catch((error) => {
+            console.log("error:", error);
+            return []
+        })
+    console.log(stats)
+    console.log("Fetched", stats.length, "gage info from gage ID = ", gageID)
+    return (stats > 0)? stats[0] : null
+}
+
 /**
  * 
  * @returns Array of States
