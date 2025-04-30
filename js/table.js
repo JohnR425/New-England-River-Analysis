@@ -45,6 +45,9 @@ function setupTable (data) {
                           
                           updateLineCharts();
                           updateGageSummary(dataValues);
+                          console.log("I will print the point:")
+                          x = query_point(dataValues[4], dataValues[5])
+                          console.log(x)
                         });
 
     rows.selectAll("td")

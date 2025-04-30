@@ -8,11 +8,37 @@ const map = new mapboxgl.Map({
     zoom: 5.5 
 });
 
+//Load up highlight_point function
+function highlight_point(point_feature) {
+    const draw_radius = point_feature.layer.paint["circle-radius"]
+    map.getSource('highlight-source').setData({
+        type: 'FeatureCollection',
+        features: [{
+            type: 'Feature',
+            geometry: point_feature.geometry,
+            properties: {
+                highlightSize: draw_radius
+            }
+        }]
+    });
+} 
+
+function query_point(lat, lon){
+    const point = map.project([lon, lat]) //Get projected point
+    const features = map.queryRenderedFeatures(point, {
+        layers: ['gage-mapboxver-8ywpgf']
+    })
+    if (!features.length) {
+        console.log("No feature selected!")
+        return;
+    }
+    return features[0]
+}
+
 
 //Set up highlight layer: 
 //let point_radius = 10
 map.on('load', () => {
-    console.log('A load event occurred.')
     map.addSource('highlight-source', {
         type: 'geojson',
         data: {
@@ -31,6 +57,7 @@ map.on('load', () => {
             'circle-stroke-color': '#000000' //white outline
         }
     });
+
 })
 
 
@@ -63,7 +90,6 @@ map.on('click', (event) => {
         <p>Top 90% Flow: ${feature.properties["bottom_10%"].toFixed(1)} cubic ft per second</p>
         <p>Top 95% Flow: ${feature.properties["bottom_5%"].toFixed(1)} cubic ft per second</p>`
     ).addTo(map)
-    console.log(popup)
     //map.setPaintProperty(feature.id, 'fill-opacity', 1)
 
     popup.on('open', () => {
@@ -74,18 +100,20 @@ map.on('click', (event) => {
 
     });
     //Highlight the selected point:
-    const draw_radius = feature.layer.paint["circle-radius"] //size of selected point
-    //modify highlight layer
-    map.getSource('highlight-source').setData({
-        type: 'FeatureCollection',
-        features: [{
-            type: 'Feature',
-            geometry: feature.geometry,
-            properties: {
-                highlightSize: draw_radius
-            }
-    }]
-    });
+    highlight_point(feature)
+    
+    // const draw_radius = feature.layer.paint["circle-radius"] //size of selected point
+    // //modify highlight layer
+    // map.getSource('highlight-source').setData({
+    //     type: 'FeatureCollection',
+    //     features: [{
+    //         type: 'Feature',
+    //         geometry: feature.geometry,
+    //         properties: {
+    //             highlightSize: draw_radius
+    //         }
+    //     }]
+    // });
     
     //Extract site number of selected pop-up
     console.log(feature.properties["Site_Number"]);
