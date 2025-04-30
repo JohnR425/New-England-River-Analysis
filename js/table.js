@@ -10,7 +10,7 @@ function setupTable (data) {
                     .attr("height", TABLE_HEIGHT)
                     .style("border", "1px solid black");
 
-    let headers = Object.keys(data[0]);
+    let headers = Object.keys(data[0]).slice(0, 6);
     
     const tableHead = table.append("thead");
     tableHead.append("tr")
@@ -23,7 +23,7 @@ function setupTable (data) {
     const tableBody = table.append("tbody");
 
     const rows = tableBody.selectAll("tr")
-                        .data(data)
+                        .data(data.slice(0, 6))
                         .enter()
                         .append("tr")
                         .style("background-color", (d, i) => i == 0 ? "lightblue" : "white")
@@ -43,6 +43,7 @@ function setupTable (data) {
                           });
                           
                           updateLineCharts();
+                          updateGageSummary(dataValues);
                         });
 
     rows.selectAll("td")

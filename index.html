@@ -47,6 +47,19 @@
         overflow-y: auto;
         opacity: 0.8
     }
+
+    .gage-summary {
+      overflow-wrap: break-word; /* Ensures words break if they are too long */
+      padding: 5px;
+      font-size: 16px;
+    }
+
+    .gage-summary.heading {
+      font-size: 30px;
+    }
+    .gage-summary.body {
+      display: flex;
+    }
     /* 
     circle {
       fill: gray;
@@ -71,6 +84,7 @@
   <script src="js/table.js"></script>
   <script src="js/lineGraph.js"></script>
   <script src="js/tableSelection.js"></script>
+  <script src="js/gageSummary.js"></script>
   <script src="modules/WorkerAPI.js"></script>
   <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
   <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet"/>
@@ -91,6 +105,7 @@
             <div id="map"></div>
             <script src="js/map.js"></script>
       </div>
+      <div id="gage-summary"></div>
       <div id="bottomElement">
         <div id="line-graph-discharge"></div>
       </div>
@@ -126,7 +141,7 @@
 </script>
 
   
-  <script src="js/script.js"></script>
+<script src="js/script.js"></script>
   
 </body>
 
