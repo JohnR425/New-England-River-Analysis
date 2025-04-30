@@ -13,8 +13,8 @@ getStates().then(function (data) {
     .then(function (data) {
         let discharges = data.map(elem => {return elem.mean_discharge});
         let precipitation = data.map(elem => {return elem.precipitation});
-        //Setup Line Chart
-        setupLineChart(discharges, precipitation);
+        initializeCharts()
+        setupLineChart()
     });
   });
 });
