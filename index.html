@@ -20,6 +20,33 @@
       flex-direction: column;
       margin-right: 20px; /* spacing between left and right */
     }
+    body {
+        margin: 0;
+        padding: 0;
+    }
+    #map {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 33%;
+    height: 70%;
+    }
+    .map-overlay {
+        position: absolute;
+        top: 0;
+        right: 0;
+        background: #fff;
+        margin-right: 20px;
+        margin-top: 20px;
+        font-family: Arial, sans-serif;
+        overflow: auto;
+        border-radius: 3px;
+    }
+    .mapboxgl-popup-content {
+        max-height: 300px;
+        overflow-y: auto;
+        opacity: 0.8
+    }
     /* 
     circle {
       fill: gray;
@@ -45,6 +72,9 @@
   <script src="js/lineGraph.js"></script>
   <script src="js/tableSelection.js"></script>
   <script src="modules/WorkerAPI.js"></script>
+  <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
+  <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet"/>
+
 </head>
 
 <body>
@@ -52,12 +82,14 @@
   <div id="container" style="display: flex;">
     <div id="leftColumn">
       <div id="topElement">
-        <div id="map">
-          <!-- Add script to the <head> of your page to load the embeddable map component -->
-          <script type="module" src="https://js.arcgis.com/embeddable-components/4.32/arcgis-embeddable-components.esm.js"></script>
-          <!-- Add custom element to <body> of your page -->
-          <arcgis-embedded-map legend-enabled portal-url="https://umass-amherst.maps.arcgis.com" style="height:600px;width:700px;" item-id="7034db4a057a47c9b231b73fc1acc3b0" theme="dark" portal-url="https://umass-amherst.maps.arcgis.com" ></arcgis-embedded-map>
+        <div class="map-overlay" id="features">
+            <h2>New England Gauge overview</h2>
+            <div id="pd"><p>Click on a river gauge to get more details!</p></div>
         </div>
+          <!-- Add script to the <head> of your page to load the embeddable map component -->
+          <!-- Add custom element to <body> of your page -->
+            <div id="map"></div>
+            <script src="js/map.js"></script>
       </div>
       <div id="bottomElement">
         <div id="line-graph-discharge"></div>

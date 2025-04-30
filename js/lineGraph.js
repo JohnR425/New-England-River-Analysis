@@ -124,6 +124,7 @@ function updateDischargeChart(discharges) {
 
     const yScaleDischarge = d3.scaleLinear()
         .domain([d3.min(discharges), d3.max(discharges)])
+        .nice()
         .range([innerHeight, 0]);
 
     const lineDischarge = d3.line()
@@ -169,6 +170,7 @@ function updatePrecipitationChart(precipitation) {
 
     const yScalePrecipitation = d3.scaleLinear()
         .domain([d3.min(precipitation), d3.max(precipitation)])
+        .nice()
         .range([innerHeight, 0]);
 
     const linePrecipitation = d3.line()
