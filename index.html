@@ -20,6 +20,19 @@
       flex-direction: column;
       margin-right: 20px; /* spacing between left and right */
     }
+
+    .gage-summary {
+      overflow-wrap: break-word; /* Ensures words break if they are too long */
+      padding: 5px;
+      font-size: 16px;
+    }
+
+    .gage-summary.heading {
+      font-size: 30px;
+    }
+    .gage-summary.body {
+      display: flex;
+    }
     /* 
     circle {
       fill: gray;
@@ -44,6 +57,7 @@
   <script src="js/table.js"></script>
   <script src="js/lineGraph.js"></script>
   <script src="js/tableSelection.js"></script>
+  <script src="js/gageSummary.js"></script>
   <script src="modules/WorkerAPI.js"></script>
 </head>
 
@@ -59,6 +73,7 @@
           <arcgis-embedded-map legend-enabled portal-url="https://umass-amherst.maps.arcgis.com" style="height:600px;width:700px;" item-id="7034db4a057a47c9b231b73fc1acc3b0" theme="dark" portal-url="https://umass-amherst.maps.arcgis.com" ></arcgis-embedded-map>
         </div>
       </div>
+      <div id="gage-summary"></div>
       <div id="bottomElement">
         <div id="line-graph"></div>
       </div>
@@ -91,7 +106,7 @@
 </script>
 
   
-  <script src="js/script.js"></script>
+<script src="js/script.js"></script>
   
 </body>
 
