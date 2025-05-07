@@ -23,16 +23,28 @@ function highlight_point(point_feature) {
     });
 } 
 
-function query_point(lat, lon){
-    const point = map.project([lon, lat]) //Get projected point
+//Using lon/lat and site_code to get singular point feature
+function query_point(lat, lon, site_code){
+    const point = map.project([lon, lat]);
     const features = map.queryRenderedFeatures(point, {
-        layers: ['gage-mapboxver-8ywpgf']
-    })
+        layers: ['gage-mapboxver-8ywpgf'],
+        filter: ['==', 'Site_Number', site_code] // or whatever your unique attribute is
+    });
     if (!features.length) {
-        console.log("No feature selected!")
-        return;
+        zoomTo(lat, lon)
+        console.log("Oops! The point wasn't rendered yet, can you try that again?")
     }
     return features[0]
+}
+
+//Zooms to given point 
+function zoomTo(lat, lon) {
+    map.flyTo({
+        center: [lon, lat],
+        speed: 1,
+        curve: 1.4, 
+        duration: 1000
+    })
 }
 
 
@@ -64,6 +76,7 @@ map.on('load', () => {
 //Event click to display pop-up, extract feature info, highlight point
 map.on('click', (event) => {
     // If the user clicked on one of your markers, get its information.
+    console.log(event)
     const features = map.queryRenderedFeatures(event.point, {
         layers: ['gage-mapboxver-8ywpgf'] // replace with layer name
     });
@@ -73,6 +86,7 @@ map.on('click', (event) => {
         return;
     }
     const feature = features[0];
+    console.log(feature)
 
     /*
     Create a popup, specify its options
