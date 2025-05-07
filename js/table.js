@@ -1,5 +1,5 @@
 TABLE_WIDTH = 800
-TABLE_HEIGHT = 1000
+TABLE_HEIGHT = 600
 
 function setupTable (data) {
   console.log("TABLE DATA", data);

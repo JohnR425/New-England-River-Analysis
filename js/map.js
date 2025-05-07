@@ -143,9 +143,8 @@ map.on('click', (event) => {
         d3.selectAll("#gauge-table tr").each(function() {
             const row = d3.select(this);
             if (row.text().includes(searchText)) {
-            console.log("Found row:", row.node());
-            // You can style it, remove it, etc.
-            row.style("background-color", "yellow");
+                row.dispatch("click");
+                row.node().scrollIntoView({ behavior: "smooth", block: "center" });
             }
         });
       });
