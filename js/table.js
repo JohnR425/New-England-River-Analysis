@@ -11,7 +11,8 @@ function setupTable (data) {
                     .attr("height", TABLE_HEIGHT)
                     .style("border", "1px solid black");
 
-    let headers = Object.keys(data[0]).slice(0, 6);
+      let headers = ["Site Number", "Site Name", "State", "Elevation (ft)", "Latitude", "Longitude"];
+      let column_names = Object.keys(data[0]).slice(0, 6);
     
     const tableHead = table.append("thead");
     tableHead.append("tr")
@@ -19,6 +20,7 @@ function setupTable (data) {
                 .data(headers)
                 .enter()
                 .append("th")
+                .attr("id", "table-head")
                 .text(d => d)
     
     const tableBody = table.append("tbody");
@@ -51,14 +53,11 @@ function setupTable (data) {
                         });
 
     rows.selectAll("td")
-            .data(gauge => headers.map(key => gauge[key]))
+            .data(gauge => column_names.map(key => gauge[key]))
             .enter()
             .append("td")
             .text(d => d)
+            .attr("id", "table-body")
             .style("border", "1px solid black")
             .style("padding", "5px");
-}
-
-function selectRowByID(id) {
-
 }

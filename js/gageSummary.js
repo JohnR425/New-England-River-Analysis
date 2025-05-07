@@ -38,7 +38,7 @@ function setupGageSummary(data) {
               return "Site Number: " + d;
             }
             else if (i == 1) {
-              return "Elevation: " + d;
+              return "Elevation (ft): " + d;
             }
             else if (i == 2) {
               return "Latitude: " + d;
@@ -91,7 +91,7 @@ function updateGageSummary(data) {
               return "Site Number: " + d;
             }
             else if (i == 1) {
-              return "Elevation: " + d;
+              return "Elevation (ft): " + d;
             }
             else if (i == 2) {
               return "Latitude: " + d;
