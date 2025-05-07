@@ -33,7 +33,7 @@ async function getGageInfoByGageID(gageID) {
         })
     console.log(stats)
     console.log("Fetched", stats.length, "gage info from gage ID = ", gageID)
-    return (stats > 0)? stats[0] : null
+    return (stats.length > 0)? stats[0] : null
 }
 
 /**
