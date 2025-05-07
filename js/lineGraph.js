@@ -32,12 +32,19 @@ function setupLineCharts() {
         .attr("transform", `translate(${margin.left},${margin.top})`)
         .attr("id", "chart-group-discharge");
 
-    // Add axis groups
+    //  axis groups
     gDischarge.append("g").attr("class", "x-axis").attr("transform", `translate(0,${innerHeight})`);
     gDischarge.append("g").attr("class", "y-axis");
 
-    // Add line for discharge
     gDischarge.append("path").attr("class", "line-discharge");
+
+    // Add line for top 5
+    gDischarge.append("path").attr("class", "area-top-5");
+    gDischarge.append("path").attr("class", "area-bottom-5");
+    gDischarge.append("path").attr("class", "area-top-10");
+    gDischarge.append("path").attr("class", "area-bottom-10");
+    gDischarge.append("path").attr("class", "line-median-discharge");
+
 
     // Add title
     svgDischarge.append("text")
@@ -49,7 +56,7 @@ function setupLineCharts() {
         .style("font-weight", "bold")
         .text("Discharge Over Time");
 
-    // Add axis labels
+    // axis labels
     gDischarge.append("text")
         .attr("class", "x-label")
         .attr("text-anchor", "middle")
@@ -107,9 +114,56 @@ function setupLineCharts() {
         .attr("x", -innerHeight / 2)
         .attr("y", -40)
         .text("Precipitation (mm)");
+
+    // Legend for Discharge Chart
+    const legendHeight = 60;
+    const svgLegend = d3.select("#discharge-legend")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", legendHeight);
+
+    const legendMargin = { left: 20, top: 10 };
+    const legendItems = [
+        { label: "Top 5% Discharge", color: "rgba(215, 152, 70, 0.3)" },
+        { label: "Top 10% Discharge", color: "rgba(218, 192, 157, 0.3)" },
+        { label: "Median Discharge", color: "gray" },
+        { label: "Bottom 10% Discharge", color: "rgba(70, 130, 180, 0.15)" },
+        { label: "Bottom 5% Discharge", color: "rgba(70, 130, 180, 0.3)" },
+
+    ];
+
+    const itemsPerRow = Math.ceil(legendItems.length / 2);
+    const itemSpacingX = 160;
+    const itemSpacingY = 25;
+
+    const legend = svgLegend.append("g")
+        .attr("transform", `translate(${legendMargin.left}, ${legendMargin.top})`);
+
+    legendItems.forEach((item, i) => {
+        const row = Math.floor(i / itemsPerRow);
+        const col = i % itemsPerRow;
+
+        const g = legend.append("g")
+            .attr("transform", `translate(${col * itemSpacingX}, ${row * itemSpacingY})`);
+
+        g.append("rect")
+            .attr("width", 18)
+            .attr("height", 12)
+            .attr("fill", item.color)
+            .attr("stroke", item.label.includes("Median") ? item.color : "none");
+
+        g.append("text")
+            .attr("x", 24)
+            .attr("y", 10)
+            .attr("dy", "0.25em")
+            .attr("fill", "black")
+            .style("font-size", "12px")
+            .text(item.label);
+    });
+
 }
 
-function updateDischargeChart(discharges, parsedDates) {
+function updateDischargeChart(discharges, parsedDates, top_5,bottom_5,top_10,bottom_10,median_disc) {
     const svgDischarge = d3.select("#line-graph-discharge").select("svg");
 
     const margin = { top: 60, right: 30, bottom: 60, left: 60 };
@@ -123,13 +177,35 @@ function updateDischargeChart(discharges, parsedDates) {
     .range([0, innerWidth]);
 
     const yScaleDischarge = d3.scaleLinear()
-        .domain([d3.min(discharges), d3.max(discharges)])
+        .domain([0, d3.max(discharges)])
         .nice()
         .range([innerHeight, 0]);
 
     const lineDischarge = d3.line()
         .x((d, i) => xScale(parsedDates[i]))
         .y(d => yScaleDischarge(d));
+
+    //THRESHOLD DATA
+
+    const makeConstantLine = (threshold) => [
+        { x: parsedDates[0], y: threshold },
+        { x: parsedDates[parsedDates.length - 1], y: threshold } 
+    ];
+
+    //areas:
+    const line_top_5 = d3.line().x(d => xScale(d.x)).y(d => yScaleDischarge(d.y));
+    const line_bottom_5 = d3.line().x(d => xScale(d.x)).y(d => yScaleDischarge(d.y));
+    const line_top_10 = d3.line().x(d => xScale(d.x)).y(d => yScaleDischarge(d.y));
+    const line_bottom_10 = d3.line().x(d => xScale(d.x)).y(d => yScaleDischarge(d.y));
+
+    const area_top_5 = d3.area().x(d => xScale(d.x)).y0(d => yScaleDischarge(d.y)).y1(() => yScaleDischarge(d3.max(discharges))); // Top boundary (max discharge)
+    const area_top_10 = d3.area().x(d => xScale(d.x)).y0(d => yScaleDischarge(d.y)).y1(() => yScaleDischarge(d3.max(discharges))); // Top boundary (max discharge)
+    const area_bottom_5 = d3.area().x(d => xScale(d.x)).y0(d => yScaleDischarge(d.y)).y1(() => yScaleDischarge(0)); // Bottom Boundary
+    const area_bottom_10 = d3.area().x(d => xScale(d.x)).y0(d => yScaleDischarge(d.y)).y1(() => yScaleDischarge(0)); // Bottom Boundary
+2010
+    const line_median_discharge = d3.line().x(d => xScale(d.x)).y(d => yScaleDischarge(d.y))
+
+    // END THRESHOLD DATA
 
     const gDischarge = svgDischarge.select("#chart-group-discharge");
 
@@ -139,17 +215,13 @@ function updateDischargeChart(discharges, parsedDates) {
     if (dateSpan <= 30) {
         xFormat = d3.timeFormat("%b %d"); // e.g. Apr 30
     } else if (dateSpan <= 365) {
-        xFormat = d3.timeFormat("%b %Y"); // e.g. Apr 2023
+        xFormat = d3.timeFormat("%b '%y"); // e.g. Apr 2023
+    } else if (dateSpan <= 1460){
+        xFormat = d3.timeFormat("%m/%y"); // e.g. Feb 2024
     } else {
-        xFormat = function(date) {
-            if (date.getMonth() === 0) {
-                return d3.timeFormat("%Y")(date); // Just the year if January
-            } else {
-                return d3.timeFormat("%b")(date); // e.g. Feb 2024
-            }
-        };
+        xFormat = d3.timeFormat("%Y"); // e.g. Feb 2024
     }
-    
+
     // Update axes
     gDischarge.select(".x-axis")
         .transition()
@@ -168,8 +240,53 @@ function updateDischargeChart(discharges, parsedDates) {
         .duration(1000)
         .attr("d", lineDischarge)
         .attr("fill", "none")
-        .attr("stroke", "steelblue")
+        .attr("stroke", "darkorange")
         .attr("stroke-width", 2);
+
+
+    // update thresholds
+
+    gDischarge.select(".area-top-5")
+        .datum(makeConstantLine(top_5))
+        .transition()
+        .duration(1000)
+        .attr("d", area_top_5)
+        .attr("fill", "rgba(215, 152, 70, 0.3)")
+        .attr("stroke", "none");
+
+    gDischarge.select(".area-bottom-5")
+        .datum(makeConstantLine(bottom_5))
+        .transition()
+        .duration(1000)
+        .attr("d", area_bottom_5)
+        .attr("fill", "rgba(70, 130, 180, 0.3)")
+        .attr("stroke", "none");
+
+    gDischarge.select(".area-top-10")
+        .datum(makeConstantLine(top_10))
+        .transition()
+        .duration(1000)
+        .attr("d", area_top_10)
+        .attr("fill", "rgba(218, 192, 157, 0.3)")
+        .attr("stroke", "none");
+
+    gDischarge.select(".area-bottom-10")
+        .datum(makeConstantLine(bottom_10))
+        .transition()
+        .duration(1000)
+        .attr("d", area_bottom_10)
+        .attr("fill", "rgba(70, 130, 180, 0.3)")
+        .attr("stroke", "none");
+
+    gDischarge.select(".line-median-discharge")
+        .datum(makeConstantLine(median_disc))
+        .transition()
+        .duration(1000)
+        .attr("d", line_median_discharge)
+        .attr("fill", "none")
+        .attr("stroke", "gray") 
+        .attr("stroke-width", 2)
+        .attr("stroke-dasharray", "4 4");
 }
 
 function updatePrecipitationChart(precipitation, parsedDates) {
@@ -203,15 +320,11 @@ function updatePrecipitationChart(precipitation, parsedDates) {
     if (dateSpan <= 30) {
         xFormat = d3.timeFormat("%b %d"); // e.g. Apr 30
     } else if (dateSpan <= 365) {
-        xFormat = d3.timeFormat("%b %Y"); // e.g. Apr 2023
+        xFormat = d3.timeFormat("%b '%y"); // e.g. Apr 2023
+    } else if (dateSpan <= 1460){
+        xFormat = d3.timeFormat("%m/%y"); // e.g. Feb 2024
     } else {
-        xFormat = function(date) {
-            if (date.getMonth() === 0) {
-                return d3.timeFormat("%Y")(date); // Just the year if January
-            } else {
-                return d3.timeFormat("%b")(date); // e.g. Feb 2024
-            }
-        };
+        xFormat = d3.timeFormat("%Y"); // e.g. Feb 2024
     }
     
     // Update axes
@@ -232,7 +345,7 @@ function updatePrecipitationChart(precipitation, parsedDates) {
         .duration(1000)
         .attr("d", linePrecipitation)
         .attr("fill", "none")
-        .attr("stroke", "red")
+        .attr("stroke", "steelblue")
         .attr("stroke-width", 2);
 }
 
@@ -260,18 +373,21 @@ function updateLineCharts() {
     // Fetch data for the selected gage
     
     getStatsByGageID(dataValues[0], startDate, endDate)
-        .then(function (data) {
-
+        .then(function (dateData) {
 
             // Filter out rows with null or undefined values
-            const validData = data.filter(e =>
+            const validDateData = dateData.filter(e =>
                 e.mean_discharge != null && e.ppt != null
             );
-            const dates = validData.map(e => new Date(e.date)); // Parse to Date objects
-            const discharges = validData.map(e => e.mean_discharge);
-            const precipitation = validData.map(e => e.ppt);
+            const dates = validDateData.map(e => new Date(e.date)); // Parse to Date objects
+            const discharges = validDateData.map(e => e.mean_discharge);
+            const precipitation = validDateData.map(e => e.ppt);
 
-            updateDischargeChart(discharges, dates);
-            updatePrecipitationChart(precipitation, dates);
+            // then, get gage data
+            getGageInfoByGageID(dataValues[0])
+                .then((gageData)=> {
+                    updateDischargeChart(discharges, dates, gageData.top_5, gageData.bottom_5, gageData.top_10,gageData.bottom_10,gageData.median_discharge);
+                    updatePrecipitationChart(precipitation, dates);
+                })
         });
 }
