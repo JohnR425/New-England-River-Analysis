@@ -47,12 +47,24 @@ function setupTable (data) {
                           
                           updateLineCharts();
                           updateGageSummary(dataValues);
-                          selected_point = query_point(dataValues[4], dataValues[5], dataValues[0])
-                          highlight_point(selected_point)
-                          remove_popup()
-                          update_popup(selected_point)
-                          display_popup()
-                          zoomTo(dataValues[4], dataValues[5])
+                          query_point(dataValues[4], dataValues[5], dataValues[0]).then((selected_point) => {
+                            console.log(selected_point)
+                            highlight_point(selected_point)
+                            remove_popup()
+                            update_popup(selected_point)
+                            display_popup()
+                            zoomTo(dataValues[4], dataValues[5])
+                          })
+                          // const selected_point = query_point(dataValues[4], dataValues[5], dataValues[0])
+                          // console.log(selected_point)
+                          // setTimeout(() => {
+                          //   console.log(selected_point)
+                          //   highlight_point(selected_point)
+                          //   remove_popup()
+                          //   update_popup(selected_point)
+                          //   display_popup()
+                          //   zoomTo(dataValues[4], dataValues[5])
+                          // }, (1000));
                         });
 
     rows.selectAll("td")

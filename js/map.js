@@ -26,18 +26,34 @@ function highlight_point(point_feature) {
 } 
 
 //Using lon/lat and site_code to get singular point feature
-function query_point(lat, lon, site_code){
+async function query_point(lat, lon, site_code) {
+    return await query_point_helper(lat, lon, site_code)
+}
+
+function query_point_helper(lat, lon, site_code){
     const point = map.project([lon, lat]);
-    const features = map.queryRenderedFeatures(point, {
+    var features = map.queryRenderedFeatures(point, {
         layers: ['gage-mapboxver-8ywpgf'],
-        filter: ['==', 'Site_Number', site_code] // or whatever your unique attribute is
+        filter: ['==', 'Site_Number', site_code]
     });
     if (!features.length) {
         zoomTo(lat, lon)
         console.log("Oops! The point wasn't rendered yet, can you try that again?")
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                const point = map.project([lon, lat]);
+                const features2 = map.queryRenderedFeatures(point, {
+                    layers: ['gage-mapboxver-8ywpgf'],
+                    filter: ['==', 'Site_Number', site_code]
+                });
+                console.log(features2[0])
+                resolve(features2[0]);
+            }, 1000);
+        })
     }
     return features[0]
 }
+
 
 //Display the Pop up of the given point on the map
 function update_popup(point_feature){
