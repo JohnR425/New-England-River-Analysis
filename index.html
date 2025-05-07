@@ -6,7 +6,6 @@
   <title>River Discharge Model</title>
   <style>
     
-    
     .line {
             fill: none;
             stroke: steelblue;
@@ -138,24 +137,19 @@
     <div id="leftColumn">
 
       <div id="topElement">
-        <div id="map">
-          <!-- Add script to the <head> of your page to load the embeddable map component -->
-          <script type="module" src="https://js.arcgis.com/embeddable-components/4.32/arcgis-embeddable-components.esm.js"></script>
-          <!-- Add custom element to <body> of your page -->
-          <arcgis-embedded-map 
-            legend-enabled
-            portal-url="https://umass-amherst.maps.arcgis.com"
-            style="height:600px;width:700px;"
-            item-id="7034db4a057a47c9b231b73fc1acc3b0"
-            theme="dark"
-          ></arcgis-embedded-map>
-        </div>
+        <!-- <div class="map-overlay" id="features">
+            <h2>New England Gauge overview</h2>
+            <div id="pd"><p>Click on a river gauge to get more details!</p></div>
+        </div> -->
+            <div id="map"></div>
+            <script src="js/map.js"></script>
       </div>
-      <div class="bottomElement">
+
+      <div id="gage-summary"></div>
+      <div id="bottomElement">
         <div id="line-graph-discharge"></div>
         <div id="discharge-legend"></div>
       </div>
-      
       <div class="bottomElement">
         <div id="line-graph-precipitation"></div>
       </div>
