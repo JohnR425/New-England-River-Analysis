@@ -287,6 +287,67 @@ function updateDischargeChart(discharges, parsedDates, top_5,bottom_5,top_10,bot
         .attr("stroke", "gray") 
         .attr("stroke-width", 2)
         .attr("stroke-dasharray", "4 4");
+
+        // HOVERING FUNCTION
+
+        // Add hover interaction
+        const hoverLineGroup = gDischarge.append("g")
+            .attr("class", "hover-line-group")
+            .style("display", "none");
+
+        hoverLineGroup.append("line")
+            .attr("class", "hover-line")
+            .attr("y1", 0)
+            .attr("y2", innerHeight)
+            .attr("stroke", "rgba(255, 0, 0, 0.64)")
+            .attr("stroke-width", 1)
+            .attr("stroke-dasharray", "4 4");
+
+            
+        const hoverLabel = hoverLineGroup.append("text")
+            .attr("class", "hover-label")
+            .attr("text-anchor", "start")
+            .attr("dy", "-0.5em")
+            .attr("fill", "black") 
+            .attr("stroke", "white") 
+            .attr("stroke-width", 3) 
+            .style("paint-order", "stroke") 
+            .style("font-weight", "bold");
+
+            // Add a transparent overlay for capturing mouse events
+            gDischarge.append("rect")
+            .attr("class", "hover-overlay")
+            .attr("width", innerWidth)
+            .attr("height", innerHeight)
+            .attr("fill", "none")
+            .attr("pointer-events", "all")
+            .on("mouseover", () => hoverLineGroup.style("display", null))
+            .on("mouseout", () => hoverLineGroup.style("display", "none"))
+            .on("mousemove", function (event) {
+                const [mouseX] = d3.pointer(event, this);
+                const xDate = xScale.invert(mouseX); // Get the date corresponding to the mouse position
+                const bisect = d3.bisector(d => d).left;
+                const index = bisect(parsedDates, xDate, 1);
+                const d0 = parsedDates[index - 1];
+                const d1 = parsedDates[index];
+                const closestDate = xDate - d0 > d1 - xDate ? d1 : d0;
+                const closestIndex = parsedDates.indexOf(closestDate);
+                const closestValue = discharges[closestIndex];
+
+                const formatDate = d3.timeFormat("%-m/%-d/%y");
+                const formattedDate = formatDate(closestDate);
+
+                // Update hover line position
+                hoverLineGroup.select(".hover-line")
+                    .attr("x1", xScale(closestDate))
+                    .attr("x2", xScale(closestDate));
+
+                // Update hover label position and text
+                hoverLabel
+                    .attr("x", xScale(closestDate) + 5)
+                    .attr("y", yScaleDischarge(closestValue))
+                    .text(`${closestValue.toFixed(2)} m^3, ${formattedDate}`);
+            });
 }
 
 function updatePrecipitationChart(precipitation, parsedDates) {
@@ -347,6 +408,68 @@ function updatePrecipitationChart(precipitation, parsedDates) {
         .attr("fill", "none")
         .attr("stroke", "steelblue")
         .attr("stroke-width", 2);
+
+    // HOVERING FUNCTION
+
+    // Add hover interaction
+    const hoverLineGroup = gPrecipitation.append("g")
+    .attr("class", "hover-line-group")
+    .style("display", "none");
+
+    hoverLineGroup.append("line")
+        .attr("class", "hover-line")
+        .attr("y1", 0)
+        .attr("y2", innerHeight)
+        .attr("stroke", "rgba(0, 0, 0, 0.64)")
+        .attr("stroke-width", 1)
+        .attr("stroke-dasharray", "4 4");
+
+        
+    const hoverLabel = hoverLineGroup.append("text")
+            .attr("class", "hover-label")
+            .attr("text-anchor", "start")
+            .attr("dy", "-0.5em")
+            .attr("fill", "black") 
+            .attr("stroke", "white") 
+            .attr("stroke-width", 3) 
+            .style("paint-order", "stroke") 
+            .style("font-weight", "bold");
+
+
+        // Add a transparent overlay for capturing mouse events
+        gPrecipitation.append("rect")
+        .attr("class", "hover-overlay")
+        .attr("width", innerWidth)
+        .attr("height", innerHeight)
+        .attr("fill", "none")
+        .attr("pointer-events", "all")
+        .on("mouseover", () => hoverLineGroup.style("display", null))
+        .on("mouseout", () => hoverLineGroup.style("display", "none"))
+        .on("mousemove", function (event) {
+            const [mouseX] = d3.pointer(event, this);
+            const xDate = xScale.invert(mouseX); // Get the date corresponding to the mouse position
+            const bisect = d3.bisector(d => d).left;
+            const index = bisect(parsedDates, xDate, 1);
+            const d0 = parsedDates[index - 1];
+            const d1 = parsedDates[index];
+            const closestDate = xDate - d0 > d1 - xDate ? d1 : d0;
+            const closestIndex = parsedDates.indexOf(closestDate);
+            const closestValue = precipitation[closestIndex];
+
+            const formatDate = d3.timeFormat("%-m/%-d/%y");
+            const formattedDate = formatDate(closestDate);
+
+            // Update hover line position
+            hoverLineGroup.select(".hover-line")
+                .attr("x1", xScale(closestDate))
+                .attr("x2", xScale(closestDate));
+
+            // Update hover label position and text
+            hoverLabel
+                .attr("x", xScale(closestDate) + 5)
+                .attr("y", yScalePrecipitation(closestValue))
+                .text(`${closestValue.toFixed(2)}mm-${formattedDate}`);
+        });
 }
 
 /**
