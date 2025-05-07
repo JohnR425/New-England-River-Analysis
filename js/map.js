@@ -7,6 +7,8 @@ const map = new mapboxgl.Map({
     center: [-70.661557, 43.893748],
     zoom: 5.5 
 });
+//Declare popup in outerscope
+current_popup = null;
 
 //Load up highlight_point function
 function highlight_point(point_feature) {
@@ -35,6 +37,37 @@ function query_point(lat, lon, site_code){
         console.log("Oops! The point wasn't rendered yet, can you try that again?")
     }
     return features[0]
+}
+
+//Display the Pop up of the given point on the map
+function update_popup(point_feature){
+    const popup = new mapboxgl.Popup({ offset: [0, 0], })
+    .setLngLat(point_feature.geometry.coordinates)
+    .setHTML(
+        `<h3>${point_feature.properties["Site_Name"]}</h3>
+        <p>This gauge has an elevation of ${point_feature.properties["Elevation_(ft)"]} ft and it located at ${point_feature.properties["Latitude"].toFixed(2)} N, ${point_feature.properties["Longitude"].toFixed(2)} E in ${point_feature.properties["State"]}</p>
+        <p>Top 5% Flow: ${point_feature.properties["top_5%"].toFixed(1)} cubic ft per second</p>
+        <p>Top 10% Flow: ${point_feature.properties["top_10%"].toFixed(1)} cubic ft per second</p>
+        <p>Top 50% Flow: ${point_feature.properties["Median_Discharge_(cubic_ft/sec)"].toFixed(1)} cubic ft per second</p>
+        <p>Top 90% Flow: ${point_feature.properties["bottom_10%"].toFixed(1)} cubic ft per second</p>
+        <p>Top 95% Flow: ${point_feature.properties["bottom_5%"].toFixed(1)} cubic ft per second</p>`
+    )
+
+    popup.on('open', () => {
+        popup.getElement().style.opacity = '0.90'
+    });
+
+    current_popup = popup
+}
+
+function display_popup() {
+    current_popup.addTo(map)
+}
+
+function remove_popup() {
+    if (current_popup) {
+        current_popup.remove()
+    }
 }
 
 //Zooms to given point 
@@ -72,11 +105,10 @@ map.on('load', () => {
 
 })
 
-
 //Event click to display pop-up, extract feature info, highlight point
 map.on('click', (event) => {
     // If the user clicked on one of your markers, get its information.
-    console.log(event)
+
     const features = map.queryRenderedFeatures(event.point, {
         layers: ['gage-mapboxver-8ywpgf'] // replace with layer name
     });
@@ -86,33 +118,35 @@ map.on('click', (event) => {
         return;
     }
     const feature = features[0];
-    console.log(feature)
 
-    /*
-    Create a popup, specify its options
-    and properties, and add it to the map.
-    */
-    // create the popup
-    const popup = new mapboxgl.Popup({ offset: [0, 0], })
-    .setLngLat(feature.geometry.coordinates)
-    .setHTML(
-        `<h3>${feature.properties["Site_Name"]}</h3>
-        <p>This gauge has an elevation of ${feature.properties["Elevation_(ft)"]} ft and it located at ${feature.properties["Latitude"].toFixed(2)} N, ${feature.properties["Longitude"].toFixed(2)} E in ${feature.properties["State"]}</p>
-        <p>Top 5% Flow: ${feature.properties["top_5%"].toFixed(1)} cubic ft per second</p>
-        <p>Top 10% Flow: ${feature.properties["top_10%"].toFixed(1)} cubic ft per second</p>
-        <p>Top 50% Flow: ${feature.properties["Median_Discharge_(cubic_ft/sec)"].toFixed(1)} cubic ft per second</p>
-        <p>Top 90% Flow: ${feature.properties["bottom_10%"].toFixed(1)} cubic ft per second</p>
-        <p>Top 95% Flow: ${feature.properties["bottom_5%"].toFixed(1)} cubic ft per second</p>`
-    ).addTo(map)
-    //map.setPaintProperty(feature.id, 'fill-opacity', 1)
+    // /*
+    // Create a popup, specify its options
+    // and properties, and add it to the map.
+    // */
+    // // create the popup
+    // const popup = new mapboxgl.Popup({ offset: [0, 0], })
+    // .setLngLat(feature.geometry.coordinates)
+    // .setHTML(
+    //     `<h3>${feature.properties["Site_Name"]}</h3>
+    //     <p>This gauge has an elevation of ${feature.properties["Elevation_(ft)"]} ft and it located at ${feature.properties["Latitude"].toFixed(2)} N, ${feature.properties["Longitude"].toFixed(2)} E in ${feature.properties["State"]}</p>
+    //     <p>Top 5% Flow: ${feature.properties["top_5%"].toFixed(1)} cubic ft per second</p>
+    //     <p>Top 10% Flow: ${feature.properties["top_10%"].toFixed(1)} cubic ft per second</p>
+    //     <p>Top 50% Flow: ${feature.properties["Median_Discharge_(cubic_ft/sec)"].toFixed(1)} cubic ft per second</p>
+    //     <p>Top 90% Flow: ${feature.properties["bottom_10%"].toFixed(1)} cubic ft per second</p>
+    //     <p>Top 95% Flow: ${feature.properties["bottom_5%"].toFixed(1)} cubic ft per second</p>`
+    // ).addTo(map)
+    // //map.setPaintProperty(feature.id, 'fill-opacity', 1)
 
-    popup.on('open', () => {
-        popup.getElement().style.transition = 'opacity 0.5s ease';
-        popup.getElement().style.opacity = '0';
-        void popup.getElement().offsetWidth();
-        popup.getElement().style.opacity = '0.90'
+    // popup.on('open', () => {
+    //     popup.getElement().style.transition = 'opacity 0.5s ease';
+    //     popup.getElement().style.opacity = '0';
+    //     void popup.getElement().offsetWidth();
+    //     popup.getElement().style.opacity = '0.90'
 
-    });
+    // });
+    update_popup(feature)
+    current_popup.addTo(map)
+
     //Highlight the selected point:
     highlight_point(feature)
     
@@ -144,8 +178,8 @@ map.on('click', (event) => {
             const row = d3.select(this);
             if (row.text().includes(searchText)) {
                 row.dispatch("click");
-                row.node().scrollIntoView({ behavior: "smooth", block: "center" });
+                row.node().scrollIntoView({ behavior: "smooth", block: "end" });
             }
         });
-      });
+    });
 });

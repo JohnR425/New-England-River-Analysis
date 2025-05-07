@@ -47,8 +47,11 @@ function setupTable (data) {
                           
                           updateLineCharts();
                           updateGageSummary(dataValues);
-                          x = query_point(dataValues[4], dataValues[5], dataValues[0])
-                          highlight_point(x)
+                          selected_point = query_point(dataValues[4], dataValues[5], dataValues[0])
+                          highlight_point(selected_point)
+                          remove_popup()
+                          update_popup(selected_point)
+                          display_popup()
                           zoomTo(dataValues[4], dataValues[5])
                         });
 
