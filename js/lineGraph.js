@@ -165,7 +165,25 @@ function setupLineCharts() {
 
 function updateDischargeChart(discharges, parsedDates, top_5,bottom_5,top_10,bottom_10,median_disc) {
     const svgDischarge = d3.select("#line-graph-discharge").select("svg");
+    const gDischarge = svgDischarge.select("#chart-group-discharge");
 
+    // Clear any previous "No Data Available" message
+    svgDischarge.select(".no-data-text").remove();
+
+    // Check if the data is invalid (all nulls or empty)
+    if (!discharges || discharges.every(d => d === null) || parsedDates.length <= 1) {
+        svgDischarge.append("text")
+            .attr("class", "no-data-text")
+            .attr("x", +svgDischarge.attr("width") / 2)
+            .attr("y", +svgDischarge.attr("height") / 2)
+            .attr("text-anchor", "middle")
+            .style("font-size", "16px")
+            .style("font-weight", "bold")
+            .attr("fill", "gray") 
+            .text("[No Data Available]");
+    }
+    
+    // Otherwise Updata
     const margin = { top: 60, right: 30, bottom: 60, left: 60 };
     const width = +svgDischarge.attr("width");
     const height = +svgDischarge.attr("height");
@@ -206,9 +224,7 @@ function updateDischargeChart(discharges, parsedDates, top_5,bottom_5,top_10,bot
     const line_median_discharge = d3.line().x(d => xScale(d.x)).y(d => yScaleDischarge(d.y))
 
     // END THRESHOLD DATA
-
-    const gDischarge = svgDischarge.select("#chart-group-discharge");
-
+    
     const dateSpan = (parsedDates[parsedDates.length - 1] - parsedDates[0]) / (1000 * 60 * 60 * 24); // in days
     let xFormat;
 
@@ -336,6 +352,8 @@ function updateDischargeChart(discharges, parsedDates, top_5,bottom_5,top_10,bot
 
                 const formatDate = d3.timeFormat("%-m/%-d/%y");
                 const formattedDate = formatDate(closestDate);
+                const formattedValue = closestValue % 1 === 0 ? parseInt(closestValue) : closestValue.toFixed(2);
+
 
                 // Update hover line position
                 hoverLineGroup.select(".hover-line")
@@ -346,13 +364,29 @@ function updateDischargeChart(discharges, parsedDates, top_5,bottom_5,top_10,bot
                 hoverLabel
                     .attr("x", xScale(closestDate) + 5)
                     .attr("y", yScaleDischarge(closestValue))
-                    .text(`${closestValue.toFixed(2)} m^3, ${formattedDate}`);
+                    .text(`${formattedValue} m^3, ${formattedDate}`);
             });
 }
 
 function updatePrecipitationChart(precipitation, parsedDates) {
     const svgPrecipitation = d3.select("#line-graph-precipitation").select("svg");
+    const gPrecipitation = svgPrecipitation.select("#chart-group-precipitation");
 
+    // Clear any previous "No Data Available" message
+    svgPrecipitation.select(".no-data-text").remove();
+
+    // Check if the data is invalid (all nulls or empty)
+    if (!precipitation || precipitation.every(p => p === null) || parsedDates.length <= 1) {
+        svgPrecipitation.append("text")
+            .attr("class", "no-data-text")
+            .attr("x", +svgPrecipitation.attr("width") / 2)
+            .attr("y", +svgPrecipitation.attr("height") / 2)
+            .attr("text-anchor", "middle")
+            .style("font-size", "16px")
+            .style("font-weight", "bold")
+            .attr("fill", "gray") 
+            .text("[No Data Available]");
+    }
     const margin = { top: 60, right: 30, bottom: 60, left: 60 };
     const width = +svgPrecipitation.attr("width");
     const height = +svgPrecipitation.attr("height");
@@ -372,8 +406,6 @@ function updatePrecipitationChart(precipitation, parsedDates) {
     const linePrecipitation = d3.line()
         .x((d, i) => xScale(parsedDates[i]))
         .y(d => yScalePrecipitation(d));
-
-    const gPrecipitation = svgPrecipitation.select("#chart-group-precipitation");
 
     const dateSpan = (parsedDates[parsedDates.length - 1] - parsedDates[0]) / (1000 * 60 * 60 * 24); // in days
     let xFormat;
