@@ -1,4 +1,4 @@
-TABLE_WIDTH = 800
+TABLE_WIDTH = 300
 TABLE_HEIGHT = 600
 
 function setupTable (data) {
@@ -11,8 +11,9 @@ function setupTable (data) {
                     .attr("height", TABLE_HEIGHT)
                     .style("border", "1px solid black");
 
-      let headers = ["Site Number", "Site Name", "State", "Elevation (ft)", "Latitude", "Longitude"];
-      let column_names = Object.keys(data[0]).slice(0, 6);
+      //let headers = ["Site Number", "Site Name", "State", "Elevation (ft)", "Latitude", "Longitude"];
+      let headers = ["Site Number", "Site Name"];
+      let column_names = Object.keys(data[0]).slice(0, 2);
     
     const tableHead = table.append("thead");
     tableHead.append("tr")

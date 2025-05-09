@@ -36,8 +36,19 @@
     label {
       font-size: 25px;
     }
+    #table {
+      text-align: left;
+      margin: 0;
+      padding: 10px;
+      display: flex;
+      justify-content: flex-start;
+    }
     #table-head {
       font-size: 20px;
+      position: sticky;
+      top: 0;
+      background-color: white;
+      border: 3px solid black;
     }
     #table-body {
       font-size: 20px;
@@ -67,7 +78,7 @@
 
     .gage-summary {
       overflow-wrap: break-word; /* Ensures words break if they are too long */
-      padding: 5px;
+      padding: 10px;
       font-size: 16px;
     }
 
@@ -76,6 +87,7 @@
     }
     .gage-summary.body {
       display: flex;
+      padding: 2px;
     }
     /* 
     circle {
