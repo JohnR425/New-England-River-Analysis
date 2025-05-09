@@ -30,11 +30,18 @@
       height: 500px;
       width: 600px;
     }
+    .bottomElement {
+      top: 0;
+      width: 600px;
+    }
+
+
+
     #state-selector {
       font-size: 25px;
     }
     label {
-      font-size: 25px;
+      font-size: 12px;
     }
     #table {
       text-align: left;
@@ -139,9 +146,6 @@
     min-width: 130px;
   }
 
-  label {
-    font-weight: bold;
-  }
   </style>
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <script src="js/table.js"></script>
@@ -149,6 +153,7 @@
   <script src="js/lineGraph.js"></script>
   <script src="js/tableSelection.js"></script>
   <script src="js/gageSummary.js"></script>
+  <script src="js/graphLegend.js"></script>
   <script src="modules/WorkerAPI.js"></script>
   <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
   <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet"/>
@@ -160,15 +165,16 @@
   <div id="container" style="display: flex;">
     <div id="leftColumn">
       <div id="topElement">
-        <!-- <div class="map-overlay" id="features">
-            <h2>New England Gauge overview</h2>
-            <div id="pd"><p>Click on a river gauge to get more details!</p></div>
-        </div> -->
+        <!-- <div id="pd"><p>Click on a river gauge to get more details!</p></div> -->
             <div id="map"></div>
             <script src="js/map.js"></script>
       </div>
-      <div id="gage-summary"></div>
+
+      <div class="bottomElement">
+        <div id="gage-summary"></div>
+      </div>
     </div>
+
     <div id="rightColumn">
       <div id="rightElement">
         <span>
@@ -181,125 +187,47 @@
         <div id="table" style="height: 600px; overflow-y: auto;"></div>
       </div>
     </div>
-  </div>
 
-  <div id="bottomRow" style="display: flex;">
-    <div id="bottomElement">
-      <div id="line-graph-discharge"></div>
-      <div id="discharge-legend"></div>
-    </div>
-    <div class="bottomElement">
-      <div id="line-graph-precipitation"></div>
-    </div>
-  </div>
-
-<!-- <label>From:  <input type="date" id="startDate" min="2010-01-01" max="2023-12-31"></label>
-<label>To: <input type="date" id="endDate" min="2010-01-01" max="2023-12-31"></label>
-
-<script>
-  d3.select("#startDate").on("change", function() {
-    console.log("Start date:", this.value);
-
-  });
-
-  d3.select("#endDate").on("change", function() {
-    console.log("End date:", this.value);
-
-  });
-</script> -->
-
-<div class="slider-container">
-  <div class="slider-container">
-    <div class="slider-block">
-      <div class="slider-left">
-        <label for="startSlider">From:</label>
-        <input type="range" id="startSlider" min="0" max="5113" value="0">
-        <span id="startDateLabel"></span>
+    <div class="graphColumn">
+      <div>
+        <span>
+          <div id="line-graph-discharge"></div>
+          <div id="discharge-legend"></div>
+          <div id="line-graph-precipitation"></div>
+        </span>
       </div>
-      <input type="date" id="startDateInput" min="2010-01-01" max="2023-12-31">
-    </div>
-  
-    <div class="slider-block">
-      <div class="slider-left">
-        <label for="endSlider">To:</label>
-        <input type="range" id="endSlider" min="0" max="5113" value="365">
-        <span id="endDateLabel"></span>
+        <div class="slider-container">
+          <div class="slider-container">
+            <div class="slider-block">
+              <div class="slider-left">
+                <div style="display: flex; align-items: center; gap: 5px;">
+                  From:
+                  <span id="startDateLabel"></span>
+                </div>
+                <input type="range" id="startSlider" min="0" max="5113" value="0">
+              </div>
+              <input type="date" id="startDateInput" min="2010-01-01" max="2023-12-31">
+            </div>
+          
+            <div class="slider-block">
+              <div class="slider-left">
+                <div style="display: flex; align-items: center; gap: 5px;">
+                  To:
+                  <span id="endDateLabel"></span>
+                </div>
+                <input type="range" id="endSlider" min="0" max="5113" value="365">
+              </div>
+              <input type="date" id="endDateInput" min="2010-01-01" max="2023-12-31">
+            </div>
+          </div>
+        </div>
+      <div>
       </div>
-      <input type="date" id="endDateInput" min="2010-01-01" max="2023-12-31">
     </div>
   </div>
-</div>
 
-<script>
-  const baseDate = new Date("2010-01-01");
-
-  const startSlider = document.getElementById("startSlider");
-  const endSlider = document.getElementById("endSlider");
-  const startLabel = document.getElementById("startDateLabel");
-  const endLabel = document.getElementById("endDateLabel");
-  const startInput = document.getElementById("startDateInput");
-  const endInput = document.getElementById("endDateInput");
-
-  function formatDate(date) {
-    return date.toISOString().split("T")[0];
-  }
-
-  function offsetToDate(offset) {
-    const d = new Date(baseDate);
-    d.setDate(d.getDate() + offset);
-    return d;
-  }
-
-  function dateToOffset(dateStr) {
-    const date = new Date(dateStr);
-    return Math.floor((date - baseDate) / (1000 * 60 * 60 * 24));
-  }
-
-  function syncFromSliders() { // always called whenever the date changes
-    let startOffset = parseInt(startSlider.value);
-    let endOffset = parseInt(endSlider.value);
-
-    // Clamp values to each other
-    if (startOffset > endOffset) startOffset = endOffset;
-    if (endOffset < startOffset) endOffset = startOffset;
-
-    const startDate = offsetToDate(startOffset);
-    const endDate = offsetToDate(endOffset);
-
-    startSlider.value = startOffset;
-    endSlider.value = endOffset;
-
-    startLabel.textContent = formatDate(startDate);
-    endLabel.textContent = formatDate(endDate);
-
-    startInput.value = formatDate(startDate);
-    endInput.value = formatDate(endDate);
-
-    console.log("UPDATING LINE CHARTS")
-    updateLineCharts() // UPDATE LINE CHARTS
-  }
-
-  function syncFromInputs() {
-    const startOffset = dateToOffset(startInput.value);
-    const endOffset = dateToOffset(endInput.value);
-
-    // Clamp to allowed range
-    if (!isNaN(startOffset)) startSlider.value = Math.min(startOffset, endSlider.value);
-    if (!isNaN(endOffset)) endSlider.value = Math.max(endOffset, startSlider.value);
-
-    syncFromSliders();
-  }
-
-  startSlider.addEventListener("mouseup", syncFromSliders);
-  endSlider.addEventListener("mouseup", syncFromSliders);
-  startInput.addEventListener("change", syncFromInputs);
-  endInput.addEventListener("change", syncFromInputs);
-
-  // Initial load
-  syncFromSliders();
-  </script>
-  
-<script src="js/script.js"></script>
+  <script src="js/sliderSelection.js"></script>  
+  <script src="js/script.js"></script>
   
 </body>
 

@@ -19,8 +19,8 @@ function setupLineCharts() {
     // Setup Discharge Chart
     const svgDischarge = d3.select("#line-graph-discharge")
         .append("svg")
-        .attr("width", 600)
-        .attr("height", 400);
+        .attr("width", 500)
+        .attr("height", 300);
 
     const margin = { top: 60, right: 30, bottom: 60, left: 60 };
     const width = +svgDischarge.attr("width");
@@ -75,8 +75,8 @@ function setupLineCharts() {
     // Setup Precipitation Chart
     const svgPrecipitation = d3.select("#line-graph-precipitation")
         .append("svg")
-        .attr("width", 600)
-        .attr("height", 400);
+        .attr("width", 500)
+        .attr("height", 300);
 
     const gPrecipitation = svgPrecipitation.append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`)
@@ -114,53 +114,6 @@ function setupLineCharts() {
         .attr("x", -innerHeight / 2)
         .attr("y", -40)
         .text("Precipitation (mm)");
-
-    // Legend for Discharge Chart
-    const legendHeight = 60;
-    const svgLegend = d3.select("#discharge-legend")
-        .append("svg")
-        .attr("width", width)
-        .attr("height", legendHeight);
-
-    const legendMargin = { left: 20, top: 10 };
-    const legendItems = [
-        { label: "Top 5% Discharge", color: "rgba(215, 152, 70, 0.3)" },
-        { label: "Top 10% Discharge", color: "rgba(218, 192, 157, 0.3)" },
-        { label: "Median Discharge", color: "gray" },
-        { label: "Bottom 10% Discharge", color: "rgba(70, 130, 180, 0.15)" },
-        { label: "Bottom 5% Discharge", color: "rgba(70, 130, 180, 0.3)" },
-
-    ];
-
-    const itemsPerRow = Math.ceil(legendItems.length / 2);
-    const itemSpacingX = 160;
-    const itemSpacingY = 25;
-
-    const legend = svgLegend.append("g")
-        .attr("transform", `translate(${legendMargin.left}, ${legendMargin.top})`);
-
-    legendItems.forEach((item, i) => {
-        const row = Math.floor(i / itemsPerRow);
-        const col = i % itemsPerRow;
-
-        const g = legend.append("g")
-            .attr("transform", `translate(${col * itemSpacingX}, ${row * itemSpacingY})`);
-
-        g.append("rect")
-            .attr("width", 18)
-            .attr("height", 12)
-            .attr("fill", item.color)
-            .attr("stroke", item.label.includes("Median") ? item.color : "none");
-
-        g.append("text")
-            .attr("x", 24)
-            .attr("y", 10)
-            .attr("dy", "0.25em")
-            .attr("fill", "black")
-            .style("font-size", "12px")
-            .text(item.label);
-    });
-
 }
 
 function updateDischargeChart(discharges, parsedDates, top_5,bottom_5,top_10,bottom_10,median_disc) {
@@ -228,8 +181,8 @@ function updateDischargeChart(discharges, parsedDates, top_5,bottom_5,top_10,bot
     const dateSpan = (parsedDates[parsedDates.length - 1] - parsedDates[0]) / (1000 * 60 * 60 * 24); // in days
     let xFormat;
 
-    if (dateSpan <= 30) {
-        xFormat = d3.timeFormat("%b %d"); // e.g. Apr 30
+    if (dateSpan <= 180) {
+        xFormat = d3.timeFormat("%m/%d"); // e.g. Apr 30
     } else if (dateSpan <= 365) {
         xFormat = d3.timeFormat("%b '%y"); // e.g. Apr 2023
     } else if (dateSpan <= 1460){
@@ -410,8 +363,8 @@ function updatePrecipitationChart(precipitation, parsedDates) {
     const dateSpan = (parsedDates[parsedDates.length - 1] - parsedDates[0]) / (1000 * 60 * 60 * 24); // in days
     let xFormat;
 
-    if (dateSpan <= 30) {
-        xFormat = d3.timeFormat("%b %d"); // e.g. Apr 30
+    if (dateSpan <= 180) {
+        xFormat = d3.timeFormat("%m/%d"); // e.g. Apr 30
     } else if (dateSpan <= 365) {
         xFormat = d3.timeFormat("%b '%y"); // e.g. Apr 2023
     } else if (dateSpan <= 1460){

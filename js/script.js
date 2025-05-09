@@ -14,6 +14,7 @@ getStates().then(function (data) {
         let discharges = data.map(elem => {return elem.mean_discharge});
         let precipitation = data.map(elem => {return elem.precipitation});
         initializeCharts();
+        initializeLegend()
     });
   });
 });
