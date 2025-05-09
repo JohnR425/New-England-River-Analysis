@@ -15,6 +15,7 @@
       display: flex;
       flex-direction: column;
       margin-right: 20px;
+      width: 500px;
     }
     #rightColumn {
       display: flex;
@@ -25,14 +26,12 @@
         margin: 0;
         padding: 0;
     }
-    #topElement {
+    .topElement {
       top: 0;
       height: 500px;
-      width: 600px;
     }
     .bottomElement {
       top: 0;
-      width: 600px;
     }
 
 
@@ -90,7 +89,7 @@
     }
 
     .gage-summary.heading {
-      font-size: 30px;
+      font-size: 20px;
     }
     .gage-summary.body {
       display: flex;
@@ -164,7 +163,7 @@
   <br />
   <div id="container" style="display: flex;">
     <div id="leftColumn">
-      <div id="topElement">
+      <div class="topElement">
         <!-- <div id="pd"><p>Click on a river gauge to get more details!</p></div> -->
             <div id="map"></div>
             <script src="js/map.js"></script>
@@ -184,15 +183,15 @@
         </span>
       </div>
       <div id="rightElement">
-        <div id="table" style="height: 600px; overflow-y: auto;"></div>
+        <div id="table" style="height: 650px; overflow-y: auto;"></div>
       </div>
     </div>
 
     <div class="graphColumn">
       <div>
         <span>
-          <div id="line-graph-discharge"></div>
           <div id="discharge-legend"></div>
+          <div id="line-graph-discharge"></div>
           <div id="line-graph-precipitation"></div>
         </span>
       </div>

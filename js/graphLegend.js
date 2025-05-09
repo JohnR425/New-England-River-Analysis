@@ -1,7 +1,7 @@
 function initializeLegend(){ 
     // Legend for Discharge Chart
-    const legendWidth = 500;
-    const legendHeight = 80;
+    const legendWidth = 650;
+    const legendHeight = 15;
 
     const svgLegend = d3.select("#discharge-legend")
         .append("svg")
@@ -10,17 +10,16 @@ function initializeLegend(){
 
     const legendMargin = { left: 0, top: 0 };
     const legendItems = [
-        { label: "Top 5% Discharge", color: "rgba(215, 152, 70, 0.3)" },
-        { label: "Top 10% Discharge", color: "rgba(218, 192, 157, 0.3)" },
-        { label: "Median Discharge", color: "gray" },
-        { label: "Bottom 10% Discharge", color: "rgba(70, 130, 180, 0.15)" },
-        { label: "Bottom 5% Discharge", color: "rgba(70, 130, 180, 0.3)" },
-
+        { label: "Top 5%", color: "rgba(215, 152, 70, 0.3)" },
+        { label: "Top 10%", color: "rgba(218, 192, 157, 0.3)" },
+        { label: "Median", color: "gray" },
+        { label: "Bottom 10%", color: "rgba(70, 130, 180, 0.15)" },
+        { label: "Bottom 5%", color: "rgba(70, 130, 180, 0.3)" },
     ];
 
-    const itemsPerRow = Math.ceil(legendItems.length / 2);
-    const itemSpacingX = 160;
-    const itemSpacingY = 25;
+    const itemsPerRow = legendItems.length
+    const itemSpacingX = 100;
+    const itemSpacingY = 0
 
     const legend = svgLegend.append("g")
         .attr("transform", `translate(${legendMargin.left}, ${legendMargin.top})`);

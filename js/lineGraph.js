@@ -19,7 +19,7 @@ function setupLineCharts() {
     // Setup Discharge Chart
     const svgDischarge = d3.select("#line-graph-discharge")
         .append("svg")
-        .attr("width", 500)
+        .attr("width", 650)
         .attr("height", 300);
 
     const margin = { top: 60, right: 30, bottom: 60, left: 60 };
@@ -70,12 +70,12 @@ function setupLineCharts() {
         .attr("transform", "rotate(-90)")
         .attr("x", -innerHeight / 2)
         .attr("y", -40)
-        .text("Mean Discharge (m³)");
+        .text("Mean Discharge (ft³/sec)");
 
     // Setup Precipitation Chart
     const svgPrecipitation = d3.select("#line-graph-precipitation")
         .append("svg")
-        .attr("width", 500)
+        .attr("width", 650)
         .attr("height", 300);
 
     const gPrecipitation = svgPrecipitation.append("g")
@@ -105,7 +105,7 @@ function setupLineCharts() {
         .attr("text-anchor", "middle")
         .attr("x", innerWidth / 2)
         .attr("y", innerHeight + 40)
-        .text("Day in 2010");
+        .text("Date");
 
     gPrecipitation.append("text")
         .attr("class", "y-label")
@@ -317,7 +317,7 @@ function updateDischargeChart(discharges, parsedDates, top_5,bottom_5,top_10,bot
                 hoverLabel
                     .attr("x", xScale(closestDate) + 5)
                     .attr("y", yScaleDischarge(closestValue))
-                    .text(`${formattedValue} m^3, ${formattedDate}`);
+                    .text(`${formattedValue} f^3/sec, ${formattedDate}`);
             });
 }
 
