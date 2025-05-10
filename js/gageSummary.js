@@ -9,12 +9,14 @@ function setupGageSummary(data) {
     textDiv.append("div")
         .classed("gage-summary", true)
         .classed("heading", true)
+        .classed("selected-gage-title", true)
         .style("font-weight", "bold")
         .text("Selected Gage Point: ");
 
     textDiv.append("div")
         .classed("gage-summary", true)
         .classed("heading", true)
+        .classed("selected-gage-name", true)
         .text(dataArr[1][1]);
 
     //site_number, elevation, lat, long.
@@ -24,6 +26,7 @@ function setupGageSummary(data) {
         dataArr[4][1],
         dataArr[5][1]
     ];
+    console.log("STATIC ARR", staticGageInfo);
 
     const dischargeInfo = [
         dataArr[6][1],
@@ -32,14 +35,17 @@ function setupGageSummary(data) {
         dataArr[9][1],
         dataArr[10][1]
     ];
+    console.log("DISCHARGE ARR", dischargeInfo);
     
     const bodyLine1 = textDiv.append("div")
                               .classed("gage-summary", true)
-                              .classed("body", true);
+                              .classed("body", true)
+                              .classed("gage-summary-basic-info", true);
 
     const bodyLine2 = textDiv.append("div")
                               .classed("gage-summary", true)
-                              .classed("body", true);
+                              .classed("body", true)
+                              .classed("gage-summary-median-info", true);
 
     bodyLine1.selectAll("div")
           .data(staticGageInfo)
@@ -89,21 +95,11 @@ function setupGageSummary(data) {
 
 function updateGageSummary(data) {
   const textDiv = d3.select("#gage-summary");
-  textDiv.selectAll("*").remove();
 
-    console.log(Object.entries(data));
     let dataArr = Object.entries(data);
+    console.log("DATA ARR", dataArr);
 
-    //site_name
-    textDiv.append("div")
-        .classed("gage-summary", true)
-        .classed("heading", true)
-        .style("font-weight", "bold")
-        .text("Selected Gage Point: ");
-
-    textDiv.append("div")
-        .classed("gage-summary", true)
-        .classed("heading", true)
+    d3.select(".selected-gage-name")
         .text(dataArr[1][1]);
 
     //site_number, elevation, lat, long.
@@ -111,9 +107,10 @@ function updateGageSummary(data) {
         dataArr[0][1],
         dataArr[3][1],
         dataArr[4][1],
-        dataArr[5][1],
+        dataArr[5][1]
     ];
-    
+    console.log("STATIC ARR", staticGageInfo);
+
     const dischargeInfo = [
         dataArr[6][1],
         dataArr[7][1],
@@ -121,57 +118,52 @@ function updateGageSummary(data) {
         dataArr[9][1],
         dataArr[10][1]
     ];
-    
-    const bodyLine1 = textDiv.append("div")
-                              .classed("gage-summary", true)
-                              .classed("body", true);
 
-    const bodyLine2 = textDiv.append("div")
-                              .classed("gage-summary", true)
-                              .classed("body", true);
+    console.log("DISCHARGE ARR", dischargeInfo);
+    
+    const bodyLine1 = d3.select(".gage-summary-basic-info");
+    const bodyLine2 = d3.select(".gage-summary-median-info");
 
     bodyLine1.selectAll("div")
           .data(staticGageInfo)
-          .enter()
-          .append("div")
+          .join("div")
           .attr("class", "gage-summary")
-          .text((d, i) => {
+          .html((d, i) => {
               console.log(d);
               if (i == 0) {
-                return "Site Number: " + d;
+                return "<strong>Site Number:</strong> <br>" + d;
               }
               else if (i == 1) {
-                return "Elevation (ft): " + d;
+                return "<strong>Elevation (ft):</strong> <br>" + d;
               }
               else if (i == 2) {
-                return "Latitude: " + d;
+                return "<strong>Latitude: </strong> <br>" + d;
               }
               else if (i == 3) {
-                return "Longitude: " + d;
+                return "<strong>Longitude: </strong> <br>" + d;
               }
           });
       
     bodyLine2.selectAll("div")
               .data(dischargeInfo)
-              .enter()
-              .append("div")
+              .join("div")
               .attr("class", "gage-summary")
-              .text((d, i) => {
+              .html((d, i) => {
                   console.log(d);
                   if (i == 0) {
-                    return "Bottom 5% Discharge: " + d;
+                    return "<strong>Bottom 5% Discharge: </strong> <br>" + d + " ft<sup>3</sup> / sec";
                   }
                   else if (i == 1) {
-                    return "Bottom 10% Discharge: " + d;
+                    return "<strong>Bottom 10% Discharge: </strong> <br>" + d + " ft<sup>3</sup> / sec";
                   }
                   else if (i == 2) {
-                    return "Median Discharge: " + d;
+                    return "<strong>Median Discharge: </strong> <br>" + d + " ft<sup>3</sup> / sec";
                   }
                   else if (i == 3) {
-                    return "Top 10% Discharge: " + d;
+                    return "<strong>Top 10% Discharge: </strong> <br>" + d + " ft<sup>3</sup> / sec";
                   }
                   else if (i == 4) {
-                    return "Top 5% Discharge: " + d;
+                    return "<strong>Top 5% Discharge: </strong> <br>" + d + " ft<sup>3</sup> / sec";
                   }
-              });    
+              });  
 }
