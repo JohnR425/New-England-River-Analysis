@@ -1,8 +1,8 @@
 TABLE_WIDTH = 300
 TABLE_HEIGHT = 600
 
-const { darkScrollbar } = require("@mui/material");
-const { dark } = require("@mui/material/styles/createPalette");
+// const { darkScrollbar } = require("@mui/material");
+// const { dark } = require("@mui/material/styles/createPalette");
 
 function setupTable (data) {
 
@@ -35,7 +35,7 @@ function setupTable (data) {
                         .enter()
                         .append("tr")
                         .style("background-color", (d, i) => i == 0 ? "lightblue" : "white")
-                        .attr("id", (i, d) => i == 0 ? "selected-gage" : null)
+                        .attr("id", (d, i) => i == 0 ? "selected-gage" : null)
                         //Adding Row Selection on Click
                         .on("click", function(i, d) {
                           d3.selectAll("#table tr").style("background-color", "white")

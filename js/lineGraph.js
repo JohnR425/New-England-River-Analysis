@@ -3,7 +3,7 @@
 function initializeCharts() {
     setupLineCharts();
 
-    getStatsByGageID("12345", "2010-01-01", "2010-12-31") // initialize with default dates
+    getStatsByGageID("01010000", "2010-01-01", "2010-12-31") // initialize with default dates
         .then(function (data) {
             const validData = data.filter(e => e.mean_discharge != null && e.ppt != null);
 
