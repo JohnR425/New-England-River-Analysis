@@ -61,10 +61,10 @@ function setupGageSummary(data) {
                 return "<strong>Elevation (ft):</strong> <br>" + d;
               }
               else if (i == 2) {
-                return "<strong>Latitude: </strong> <br>" + d;
+                return "<strong>Latitude: </strong> <br>" + d.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " N";
               }
               else if (i == 3) {
-                return "<strong>Longitude: </strong> <br>" + d;
+                return "<strong>Longitude: </strong> <br>" + d.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " E";
               }
           });
       
@@ -76,19 +76,19 @@ function setupGageSummary(data) {
               .html((d, i) => {
                   console.log(d);
                   if (i == 0) {
-                    return "<strong>Bottom 5% Discharge: </strong> <br>" + d + " ft<sup>3</sup> / sec";
+                    return "<strong>Bottom 5% Discharge: </strong> <br>" + d.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " ft<sup>3</sup> / sec";
                   }
                   else if (i == 1) {
-                    return "<strong>Bottom 10% Discharge: </strong> <br>" + d + " ft<sup>3</sup> / sec";
+                    return "<strong>Bottom 10% Discharge: </strong> <br>" + d.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " ft<sup>3</sup> / sec";
                   }
                   else if (i == 2) {
-                    return "<strong>Median Discharge: </strong> <br>" + d + " ft<sup>3</sup> / sec";
+                    return "<strong>Median Discharge: </strong> <br>" + d.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " ft<sup>3</sup> / sec";
                   }
                   else if (i == 3) {
-                    return "<strong>Top 10% Discharge: </strong> <br>" + d + " ft<sup>3</sup> / sec";
+                    return "<strong>Top 10% Discharge: </strong> <br>" + d.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " ft<sup>3</sup> / sec";
                   }
                   else if (i == 4) {
-                    return "<strong>Top 5% Discharge: </strong> <br>" + d + " ft<sup>3</sup> / sec";
+                    return "<strong>Top 5% Discharge: </strong> <br>" + d.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " ft<sup>3</sup> / sec";
                   }
               });                       
 }
@@ -137,10 +137,10 @@ function updateGageSummary(data) {
                 return "<strong>Elevation (ft):</strong> <br>" + d;
               }
               else if (i == 2) {
-                return "<strong>Latitude: </strong> <br>" + d;
+                return "<strong>Latitude: </strong> <br>" + d.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " N";
               }
               else if (i == 3) {
-                return "<strong>Longitude: </strong> <br>" + d;
+                return "<strong>Longitude: </strong> <br>" + d.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " E";
               }
           });
       
@@ -151,19 +151,19 @@ function updateGageSummary(data) {
               .html((d, i) => {
                   console.log(d);
                   if (i == 0) {
-                    return "<strong>Bottom 5% Discharge: </strong> <br>" + d + " ft<sup>3</sup> / sec";
+                    return "<strong>Bottom 5% Discharge: </strong> <br>" + d.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " ft<sup>3</sup> / sec";
                   }
                   else if (i == 1) {
-                    return "<strong>Bottom 10% Discharge: </strong> <br>" + d + " ft<sup>3</sup> / sec";
+                    return "<strong>Bottom 10% Discharge: </strong> <br>" + d.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " ft<sup>3</sup> / sec";
                   }
                   else if (i == 2) {
-                    return "<strong>Median Discharge: </strong> <br>" + d + " ft<sup>3</sup> / sec";
+                    return "<strong>Median Discharge: </strong> <br>" + d.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " ft<sup>3</sup> / sec";
                   }
                   else if (i == 3) {
-                    return "<strong>Top 10% Discharge: </strong> <br>" + d + " ft<sup>3</sup> / sec";
+                    return "<strong>Top 10% Discharge: </strong> <br>" + d.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " ft<sup>3</sup> / sec";
                   }
                   else if (i == 4) {
-                    return "<strong>Top 5% Discharge: </strong> <br>" + d + " ft<sup>3</sup> / sec";
+                    return "<strong>Top 5% Discharge: </strong> <br>" + d.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " ft<sup>3</sup> / sec";
                   }
               });  
 }
