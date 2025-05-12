@@ -69,7 +69,7 @@ function setupLineCharts() {
         .attr("text-anchor", "middle")
         .attr("transform", "rotate(-90)")
         .attr("x", -innerHeight / 2)
-        .attr("y", -40)
+        .attr("y", -50)
         .text("Mean Discharge (ft³/sec)");
 
     // Setup Precipitation Chart
@@ -112,7 +112,7 @@ function setupLineCharts() {
         .attr("text-anchor", "middle")
         .attr("transform", "rotate(-90)")
         .attr("x", -innerHeight / 2)
-        .attr("y", -40)
+        .attr("y", -50)
         .text("Precipitation (mm)");
 }
 
@@ -314,10 +314,29 @@ function updateDischargeChart(discharges, parsedDates, top_5,bottom_5,top_10,bot
                     .attr("x2", xScale(closestDate));
 
                 // Update hover label position and text
+                const labelX = xScale(closestDate);
+                const labelY = yScaleDischarge(closestValue);
+                const labelPadding = 5;
+                const labelText = `${closestValue.toFixed(2)}mm - ${formattedDate}`;
+
+                // Estimate text width (~7px per character for 12px font)
+                const estimatedTextWidth = labelText.length * 7;
+                const maxX = innerWidth;
+
+                let anchor = "start";
+                let labelXAdjusted = labelX + labelPadding;
+
+                if (labelX + estimatedTextWidth + labelPadding > maxX) {
+                anchor = "end";
+                labelXAdjusted = labelX - labelPadding;
+                }
+
                 hoverLabel
-                    .attr("x", xScale(closestDate) + 5)
-                    .attr("y", yScaleDischarge(closestValue))
-                    .text(`${formattedValue} f^3/sec, ${formattedDate}`);
+                    .attr("x", labelXAdjusted)
+                    .attr("y", labelY)
+                    .attr("text-anchor", anchor)
+                    .text(labelText);
+
             });
 }
 
@@ -449,11 +468,28 @@ function updatePrecipitationChart(precipitation, parsedDates) {
                 .attr("x1", xScale(closestDate))
                 .attr("x2", xScale(closestDate));
 
-            // Update hover label position and text
+            const labelX = xScale(closestDate);
+            const labelY = yScalePrecipitation(closestValue);
+            const labelPadding = 5;
+            const labelText = `${closestValue.toFixed(2)}mm - ${formattedDate}`;
+
+            // Estimate text width (~7px per character for 12px font)
+            const estimatedTextWidth = labelText.length * 7;
+            const maxX = innerWidth;
+
+            let anchor = "start";
+            let labelXAdjusted = labelX + labelPadding;
+
+            if (labelX + estimatedTextWidth + labelPadding > maxX) {
+            anchor = "end";
+            labelXAdjusted = labelX - labelPadding;
+            }
+
             hoverLabel
-                .attr("x", xScale(closestDate) + 5)
-                .attr("y", yScalePrecipitation(closestValue))
-                .text(`${closestValue.toFixed(2)}mm-${formattedDate}`);
+                .attr("x", labelXAdjusted)
+                .attr("y", labelY)
+                .attr("text-anchor", anchor)
+                .text(labelText);
         });
 }
 
