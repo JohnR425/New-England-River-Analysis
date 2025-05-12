@@ -1,8 +1,10 @@
 MAP = null
 
+//Load the map
 function setupMap (firstPoint) {
-    //'accessToken'
+    //'accessToken' please dont steal
     mapboxgl.accessToken = 'pk.eyJ1IjoiY2hhcmxlczM1MiIsImEiOiJjbTlpcjkzMzgwM2gyMmxvbzI2Z3VzaDZpIn0.k9Y1IUGkNfSlEptHSO6_Yw';
+    //Create map from mapbox
     MAP = new mapboxgl.Map({
         container: 'map',
         //STYLE_URL
@@ -12,8 +14,7 @@ function setupMap (firstPoint) {
     });
     //Declare popup in outerscope
     current_popup = null;
-    //Set up highlight layer: 
-    //let point_radius = 10
+    //Set up highlight layer which will be updated as the user clicks on gauges.
     MAP.on('load', () => {
         MAP.addSource('highlight-source', {
             type: 'geojson',
@@ -33,15 +34,16 @@ function setupMap (firstPoint) {
                 'circle-stroke-color': '#000000' //white outline
             }
         });
-
+        //Automatically select the first point, zooming, highlighting and displaying its popup
         query_point(firstPoint.latitude, firstPoint.longitude, firstPoint.site_number).then((selected_point) => {
-                            console.log(selected_point)
                             highlight_point(selected_point)
                             remove_popup()
                             update_popup(selected_point)
                             display_popup()
                             zoomTo(firstPoint.latitude, firstPoint.longitude)
-                          })
+                        })
+        //Add zoom in/out buttons to map
+        MAP.addControl(new mapboxgl.NavigationControl({showCompass: false}), 'top-left');
 
     })
 
@@ -58,62 +60,17 @@ function setupMap (firstPoint) {
             return;
         }
         const feature = features[0];
-
-        // /*
-        // Create a popup, specify its options
-        // and properties, and add it to the map.
-        // */
-        // // create the popup
-        // const popup = new mapboxgl.Popup({ offset: [0, 0], })
-        // .setLngLat(feature.geometry.coordinates)
-        // .setHTML(
-        //     `<h3>${feature.properties["Site_Name"]}</h3>
-        //     <p>This gauge has an elevation of ${feature.properties["Elevation_(ft)"]} ft and it located at ${feature.properties["Latitude"].toFixed(2)} N, ${feature.properties["Longitude"].toFixed(2)} E in ${feature.properties["State"]}</p>
-        //     <p>Top 5% Flow: ${feature.properties["top_5%"].toFixed(1)} cubic ft per second</p>
-        //     <p>Top 10% Flow: ${feature.properties["top_10%"].toFixed(1)} cubic ft per second</p>
-        //     <p>Top 50% Flow: ${feature.properties["Median_Discharge_(cubic_ft/sec)"].toFixed(1)} cubic ft per second</p>
-        //     <p>Top 90% Flow: ${feature.properties["bottom_10%"].toFixed(1)} cubic ft per second</p>
-        //     <p>Top 95% Flow: ${feature.properties["bottom_5%"].toFixed(1)} cubic ft per second</p>`
-        // ).addTo(map)
-        // //map.setPaintProperty(feature.id, 'fill-opacity', 1)
-
-        // popup.on('open', () => {
-        //     popup.getElement().style.transition = 'opacity 0.5s ease';
-        //     popup.getElement().style.opacity = '0';
-        //     void popup.getElement().offsetWidth();
-        //     popup.getElement().style.opacity = '0.90'
-
-        // });
+        //Display the popup corresponding to the clicked point:
         update_popup(feature)
         current_popup.addTo(MAP)
-
         //Highlight the selected point:
         highlight_point(feature)
-        
-        // const draw_radius = feature.layer.paint["circle-radius"] //size of selected point
-        // //modify highlight layer
-        // map.getSource('highlight-source').setData({
-        //     type: 'FeatureCollection',
-        //     features: [{
-        //         type: 'Feature',
-        //         geometry: feature.geometry,
-        //         properties: {
-        //             highlightSize: draw_radius
-        //         }
-        //     }]
-        // });
-        
-        //Extract site number of selected pop-up
-        console.log(feature.properties["Site_Number"]);
-
-        console.log(feature.properties["State"]);
+        //Highlight corresponding row on table
         getGagesByState(feature.properties["State"]).then(function (data) {
             setupTable(data);
             d3.select("#state-selector")
             .property("value", feature.properties["State"]);
-
             const searchText = feature.properties["Site_Number"];
-
             d3.selectAll("#gauge-table tr").each(function() {
                 const row = d3.select(this);
                 if (row.text().includes(searchText)) {
@@ -124,11 +81,13 @@ function setupMap (firstPoint) {
         });
     });
 
+//Create the map legend
+//Make legend container
 const legend = document.createElement('div');
 legend.id = "Map-Legend"
 legend.style.position = 'absolute';
 legend.style.bottom = '40px';
-legend.style.left = '400px';
+legend.style.left = '300px';
 legend.style.background = 'white';
 legend.style.padding = '10px';
 legend.style.fontSize = '12px';
@@ -139,7 +98,7 @@ legend.style.width = '160px';
 legend.style.textAlign = 'center';
 legend.style.opacity = '0.2'
 document.getElementById('map').appendChild(legend);
-
+//Create mouseover/mouseout events to chance opacity of legend
 d3.select("#Map-Legend").on("mouseover", function() {
     d3.select(this)
     .transition()
@@ -152,35 +111,29 @@ d3.select("#Map-Legend").on("mouseout", function() {
     .duration(100)
     .style("opacity", "0.2");
 })
-
-// Title
+//Title of Legend
 const title = document.createElement('div');
 title.textContent = 'Median Discharge (ft³/s)';
 title.style.fontWeight = 'bold';
 title.style.marginBottom = '8px';
 legend.appendChild(title);
-
-// Values for circles
-const maxValue = 14000;
-const minValue = 0;
-const steps = 5;
-const maxPixelSize = 20
-const minPixelSize = 5
-
-// Gradient bar
+//Gradient bar
 const bar = document.createElement('div');
 bar.style.position = 'absolute'
-bar.style.height = '185px';
+bar.style.height = '100px';
 bar.style.width = '12px'
 bar.style.top = '39px'
 bar.style.left = '28px'
 bar.style.border = '2px solid black'
-// bar.style.borderRadius = '3px';
-// bar.style.marginBottom = '5px';
 bar.style.background = 'linear-gradient(to top, #ffffcc, #bef1fe,  #2c83fc, #021464)';
 legend.appendChild(bar);
-
-// Generate largest to smallest circles
+//Set parameters for circles
+const maxValue = 14000;
+const minValue = 0;
+const steps = 3;
+const maxPixelSize = 20
+const minPixelSize = 5
+//Generate largest to smallest circles
 for (let i = steps; i >= 1; i--) {
   const value = Math.round((i-1) * maxValue/(steps-1));
   const radius = minPixelSize + ((i-1)*(maxPixelSize-minPixelSize)/(steps-1)); // visually scaled size
@@ -188,10 +141,10 @@ for (let i = steps; i >= 1; i--) {
     const wrapper = document.createElement('div');
     wrapper.style.position = 'relative';
     wrapper.style.height = `${radius * 2}px`;
-    wrapper.style.marginBottom = '15px'; // overlap the circles a bit
+    wrapper.style.marginBottom = '15px'; // distance between circles
 
     const circle = document.createElement('div');
-    circle.style.position = 'absolute';          // position inside wrapper
+    circle.style.position = 'absolute';
     circle.style.top = '50%';
     circle.style.left = '50%';
     circle.style.transform = 'translate(-50%, -50%)';
@@ -220,6 +173,7 @@ for (let i = steps; i >= 1; i--) {
     return MAP;
 }
 
+//Helper Functions
 //Load up highlight_point function
     function highlight_point(point_feature) {
         const draw_radius = point_feature.layer.paint["circle-radius"]
@@ -264,7 +218,6 @@ for (let i = steps; i >= 1; i--) {
         return features[0]
     }
 
-
     //Display the Pop up of the given point on the map
     function update_popup(point_feature){
         const popup = new mapboxgl.Popup({ offset: [0, 0], })
@@ -272,11 +225,11 @@ for (let i = steps; i >= 1; i--) {
         .setHTML(
             `<h3>${point_feature.properties["Site_Name"]}</h3>
             <p>This gauge has an elevation of ${point_feature.properties["Elevation_(ft)"]} ft and it located at ${point_feature.properties["Latitude"].toFixed(2)} N, ${point_feature.properties["Longitude"].toFixed(2)} E in ${point_feature.properties["State"]}</p>
-            <p>Top 5% Flow: ${point_feature.properties["top_5%"].toFixed(1)} cubic ft per second</p>
-            <p>Top 10% Flow: ${point_feature.properties["top_10%"].toFixed(1)} cubic ft per second</p>
-            <p>Top 50% Flow: ${point_feature.properties["Median_Discharge_(cubic_ft/sec)"].toFixed(1)} cubic ft per second</p>
-            <p>Top 90% Flow: ${point_feature.properties["bottom_10%"].toFixed(1)} cubic ft per second</p>
-            <p>Top 95% Flow: ${point_feature.properties["bottom_5%"].toFixed(1)} cubic ft per second</p>`
+            <p>95th Percentile Discharge: ${point_feature.properties["top_5%"].toFixed(1)} cubic ft per second</p>
+            <p>90th Percentile Discharge: ${point_feature.properties["top_10%"].toFixed(1)} cubic ft per second</p>
+            <p>50th Percentile Discharge: ${point_feature.properties["Median_Discharge_(cubic_ft/sec)"].toFixed(1)} cubic ft per second</p>
+            <p>10th Percentile Discharge: ${point_feature.properties["bottom_10%"].toFixed(1)} cubic ft per second</p>
+            <p>5th Percentile Discharge: ${point_feature.properties["bottom_5%"].toFixed(1)} cubic ft per second</p>`
         )
 
         popup.on('open', () => {
