@@ -147,6 +147,41 @@
     min-width: 130px;
   }
 
+  .row {
+    display: flex;
+    margin-bottom: 1em;
+  }
+
+  .flex-container {
+    display: flex;
+    flex-wrap: nowrap;
+    background-color: rgb(114, 170, 226);
+    margin: 10px;
+  }
+
+  .flex-left, .flex-right {
+    width: 1000px;
+  }
+
+  .title-text {
+    margin: 10px;
+    font-size: 50px;
+  }
+
+  .subtitle-text {
+    margin: 10px;
+    font-size: 30px;
+  }
+
+  .explanatory-body {
+    margin: 10px;
+    font-size: 20px;
+  }
+
+  .gage-desc {
+    margin: 10px;
+  }
+
   </style>
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <script src="js/table.js"></script>
@@ -164,8 +199,15 @@
 
 <body>
   <br />
-  <h1>New England River Analysis</h1>
-  <h2>Please select a gage point in the map/table to learn more about it!</h2>
+  <div class="flex-container" width="500px">
+    <div class="flex-left">
+      <h1 class="title-text">New England River Analysis</h1>
+      <h2 class="subtitle-text">Please select a gage point in the map/table to learn more about it!</h2>
+    </div>
+    <div class="flex-right">
+      <p class="explanatory-body">This data visualization provides an intuitive display of all of the gage points in New England in a single location, sourced from <a href="https://waterdata.usgs.gov/nwis/rt" target="_blank">USGS Current Water Data for USA</a> and <a href="https://prism.oregonstate.edu/recent/" target="_blank">PRISM</a>. Our linked multi-view visualization allows for multiple methods of exploration, whether it be exploration by state through the table view or geographic exploration via the interactive map. Feel free to learn more about each individual gage point and also the relationship between discharge and precipitation at each gage point through the interactive graphs and date sliders on the right.</p>
+    </div>
+  </div>
   <div id="container" style="display: flex;">
     <div id="leftColumn">
       <div class="topElement">
@@ -175,6 +217,9 @@
 
       <div class="bottomElement">
         <div id="gage-summary"></div>
+        <div id="gage-summary-legend">
+          <p class="gage-desc">Percentile Discharge values represent the percentile taken from all existing data for the selected gage point.</p>
+        </div>
       </div>
     </div>
 

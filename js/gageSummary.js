@@ -76,19 +76,19 @@ function setupGageSummary(data) {
               .html((d, i) => {
                   console.log(d);
                   if (i == 0) {
-                    return "<strong>Bottom 5% Discharge: </strong> <br>" + d.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " ft<sup>3</sup> / sec";
+                    return "<strong>5th Percentile Discharge: </strong> <br>" + d.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " ft<sup>3</sup> / sec";
                   }
                   else if (i == 1) {
-                    return "<strong>Bottom 10% Discharge: </strong> <br>" + d.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " ft<sup>3</sup> / sec";
+                    return "<strong>10% Percentile Discharge: </strong> <br>" + d.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " ft<sup>3</sup> / sec";
                   }
                   else if (i == 2) {
                     return "<strong>Median Discharge: </strong> <br>" + d.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " ft<sup>3</sup> / sec";
                   }
                   else if (i == 3) {
-                    return "<strong>Top 10% Discharge: </strong> <br>" + d.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " ft<sup>3</sup> / sec";
+                    return "<strong>90th Percentile Discharge: </strong> <br>" + d.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " ft<sup>3</sup> / sec";
                   }
                   else if (i == 4) {
-                    return "<strong>Top 5% Discharge: </strong> <br>" + d.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " ft<sup>3</sup> / sec";
+                    return "<strong>95th Percentile Discharge: </strong> <br>" + d.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " ft<sup>3</sup> / sec";
                   }
               });                       
 }
@@ -151,19 +151,19 @@ function updateGageSummary(data) {
               .html((d, i) => {
                   console.log(d);
                   if (i == 0) {
-                    return "<strong>Bottom 5% Discharge: </strong> <br>" + d.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " ft<sup>3</sup> / sec";
+                    return "<strong>5th Percentile Discharge: </strong> <br>" + d.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " ft<sup>3</sup> / sec";
                   }
                   else if (i == 1) {
-                    return "<strong>Bottom 10% Discharge: </strong> <br>" + d.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " ft<sup>3</sup> / sec";
+                    return "<strong>10% Percentile Discharge: </strong> <br>" + d.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " ft<sup>3</sup> / sec";
                   }
                   else if (i == 2) {
                     return "<strong>Median Discharge: </strong> <br>" + d.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " ft<sup>3</sup> / sec";
                   }
                   else if (i == 3) {
-                    return "<strong>Top 10% Discharge: </strong> <br>" + d.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " ft<sup>3</sup> / sec";
+                    return "<strong>90th Percentile Discharge: </strong> <br>" + d.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " ft<sup>3</sup> / sec";
                   }
                   else if (i == 4) {
-                    return "<strong>Top 5% Discharge: </strong> <br>" + d.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " ft<sup>3</sup> / sec";
+                    return "<strong>95th Percentile Discharge: </strong> <br>" + d.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " ft<sup>3</sup> / sec";
                   }
               });  
 }
