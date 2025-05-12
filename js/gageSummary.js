@@ -79,7 +79,7 @@ function setupGageSummary(data) {
                     return "<strong>5th Percentile Discharge: </strong> <br>" + d.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " ft<sup>3</sup> / sec";
                   }
                   else if (i == 1) {
-                    return "<strong>10% Percentile Discharge: </strong> <br>" + d.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " ft<sup>3</sup> / sec";
+                    return "<strong>10th Percentile Discharge: </strong> <br>" + d.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " ft<sup>3</sup> / sec";
                   }
                   else if (i == 2) {
                     return "<strong>Median Discharge: </strong> <br>" + d.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " ft<sup>3</sup> / sec";
@@ -154,7 +154,7 @@ function updateGageSummary(data) {
                     return "<strong>5th Percentile Discharge: </strong> <br>" + d.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " ft<sup>3</sup> / sec";
                   }
                   else if (i == 1) {
-                    return "<strong>10% Percentile Discharge: </strong> <br>" + d.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " ft<sup>3</sup> / sec";
+                    return "<strong>10th Percentile Discharge: </strong> <br>" + d.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " ft<sup>3</sup> / sec";
                   }
                   else if (i == 2) {
                     return "<strong>Median Discharge: </strong> <br>" + d.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " ft<sup>3</sup> / sec";
