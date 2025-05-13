@@ -1,6 +1,6 @@
 function initializeLegend(){ 
-    const legendWidth = 650;
-    const legendHeight = 40;
+    const legendWidth = 620;
+    const legendHeight = 40; // increased for 2 rows
 
     const svgLegend = d3.select("#discharge-legend")
         .append("svg")
@@ -8,11 +8,11 @@ function initializeLegend(){
         .attr("height", legendHeight);
 
     const legendItems = [
-        { label: "95th Percentile Discharge", color: "rgba(215, 152, 70, 0.3)" },
-        { label: "90th Percentile Discharge", color: "rgba(218, 192, 157, 0.3)" },
+        { label: "95th Percentile Discharge", color: "#B3CCE0" },
+        { label: "90th Percentile Discharge", color: "rgba(70, 130, 180, 0.15)" },
         { label: "Median Discharge", color: "gray" },
-        { label: "10th Percentile Discharge", color: "rgba(70, 130, 180, 0.15)" },
-        { label: "5th Percentile Discharge", color: "rgba(70, 130, 180, 0.3)" },
+        { label: "10th Percentile Discharge", color: "rgba(218, 192, 157, 0.3)" },
+        { label: "5th Percentile Discharge", color: "#ECD6BA" },
     ];
 
     const itemsPerRow = 3;

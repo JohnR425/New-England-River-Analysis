@@ -33,6 +33,7 @@ function setupLineCharts() {
         .attr("transform", `translate(${MARGIN.left},${MARGIN.top})`)
         .attr("id", "chart-group-discharge");
 
+
     //  axis groups
     gDischarge.append("g").attr("class", "x-axis").attr("transform", `translate(0,${innerHeight})`);
     gDischarge.append("g").attr("class", "y-axis");
@@ -71,7 +72,7 @@ function setupLineCharts() {
         .attr("text-anchor", "middle")
         .attr("transform", "rotate(-90)")
         .attr("x", -innerHeight / 2)
-        .attr("y", -50)
+        .attr("y", -43)
         .text("Mean Discharge (ft³/sec)");
 
     // Setup Precipitation Chart
@@ -114,8 +115,23 @@ function setupLineCharts() {
         .attr("text-anchor", "middle")
         .attr("transform", "rotate(-90)")
         .attr("x", -innerHeight / 2)
-        .attr("y", -50)
+        .attr("y", -43)
         .text("Precipitation (mm)");
+
+    gDischarge.insert("rect", ":first-child")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("width", innerWidth)
+        .attr("height", innerHeight)
+        .attr("fill", "white");
+
+    // Add white background to precipitation chart area (between axes)
+    gPrecipitation.insert("rect", ":first-child")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("width", innerWidth)
+        .attr("height", innerHeight)
+        .attr("fill", "white");
 }
 
 function updateDischargeChart(discharges, parsedDates, top_5,bottom_5, top_10, bottom_10, median_disc) {
@@ -157,30 +173,22 @@ function updateDischargeChart(discharges, parsedDates, top_5,bottom_5, top_10, b
         .x((d, i) => xScale(parsedDates[i]))
         .y(d => yScaleDischarge(d));
 
-    //Areas:
-    //Top boundaries
-    const area_top_5 = d3.area()
-                            .x(d => xScale(d.x))
-                            .y0(d => yScaleDischarge(d.y))
-                            .y1(() => yScaleDischarge(d3.max(discharges))); 
-    const area_top_10 = d3.area()
-                            .x(d => xScale(d.x))
-                            .y0(d => yScaleDischarge(d.y))
-                            .y1(() => yScaleDischarge(d3.max(discharges)));
-    // Bottom boundaries
-    const area_bottom_5 = d3.area()
-                            .x(d => xScale(d.x))
-                            .y0(d => yScaleDischarge(d.y))
-                            .y1(() => yScaleDischarge(0)); 
-    const area_bottom_10 = d3.area()
-                                .x(d => xScale(d.x))
-                                .y0(d => yScaleDischarge(d.y))
-                                .y1(() => yScaleDischarge(0));
-    //Median line
-    const line_median_discharge = d3.line()
-                                        .x(d => xScale(d.x))
-                                        .y(d => yScaleDischarge(d.y));
+    //THRESHOLD DATA
 
+    //areas:
+    const line_top_5 = d3.line().x(d => xScale(d.x)).y(d => yScaleDischarge(d.y));
+    const line_bottom_5 = d3.line().x(d => xScale(d.x)).y(d => yScaleDischarge(d.y));
+    const line_top_10 = d3.line().x(d => xScale(d.x)).y(d => yScaleDischarge(d.y));
+    const line_bottom_10 = d3.line().x(d => xScale(d.x)).y(d => yScaleDischarge(d.y));
+
+    const area_top_5 = d3.area().x(d => xScale(d.x)).y0(d => yScaleDischarge(d.y)).y1(() => 0); // Top boundary (max discharge)
+    const area_top_10 = d3.area().x(d => xScale(d.x)).y0(d => yScaleDischarge(d.y)).y1(() => 0); // Top boundary (max discharge)
+    const area_bottom_5 = d3.area().x(d => xScale(d.x)).y0(d => yScaleDischarge(d.y)).y1(() => yScaleDischarge(0)); // Bottom Boundary
+    const area_bottom_10 = d3.area().x(d => xScale(d.x)).y0(d => yScaleDischarge(d.y)).y1(() => yScaleDischarge(0)); // Bottom Boundary
+2010
+    const line_median_discharge = d3.line().x(d => xScale(d.x)).y(d => yScaleDischarge(d.y))
+
+    // END THRESHOLD DATA
     
     const dateSpan = (parsedDates[parsedDates.length - 1] - parsedDates[0]) / (1000 * 60 * 60 * 24); // in days
     let xFormat;
@@ -213,7 +221,7 @@ function updateDischargeChart(discharges, parsedDates, top_5,bottom_5, top_10, b
         .duration(1000)
         .attr("d", lineDischarge)
         .attr("fill", "none")
-        .attr("stroke", "darkorange")
+        .attr("stroke", "#0D318C")
         .attr("stroke-width", 2);
 
     const makeConstantLine = (threshold) => [
@@ -225,8 +233,8 @@ function updateDischargeChart(discharges, parsedDates, top_5,bottom_5, top_10, b
         .datum(makeConstantLine(top_5))
         .transition()
         .duration(1000)
-        .attr("d", area_top_5)
-        .attr("fill", "rgba(215, 152, 70, 0.3)")
+        .attr("d", top_5 < yScaleDischarge.domain()[1] ? area_top_5:null)
+        .attr("fill", "rgba(70, 130, 180, 0.3)")
         .attr("stroke", "none");
 
     gDischarge.select(".area-bottom-5")
@@ -234,15 +242,15 @@ function updateDischargeChart(discharges, parsedDates, top_5,bottom_5, top_10, b
         .transition()
         .duration(1000)
         .attr("d", area_bottom_5)
-        .attr("fill", "rgba(70, 130, 180, 0.3)")
+        .attr("fill", "rgba(215, 152, 70, 0.3)")
         .attr("stroke", "none");
 
     gDischarge.select(".area-top-10")
         .datum(makeConstantLine(top_10))
         .transition()
         .duration(1000)
-        .attr("d", area_top_10)
-        .attr("fill", "rgba(218, 192, 157, 0.3)")
+        .attr("d", top_10 < yScaleDischarge.domain()[1] ? area_top_10: null)
+        .attr("fill", "rgba(70, 130, 180, 0.15)")
         .attr("stroke", "none");
 
     gDischarge.select(".area-bottom-10")
@@ -250,7 +258,7 @@ function updateDischargeChart(discharges, parsedDates, top_5,bottom_5, top_10, b
         .transition()
         .duration(1000)
         .attr("d", area_bottom_10)
-        .attr("fill", "rgba(70, 130, 180, 0.3)")
+        .attr("fill", "rgba(218, 192, 157, 0.3)")
         .attr("stroke", "none");
 
     gDischarge.select(".line-median-discharge")
@@ -412,7 +420,7 @@ function updatePrecipitationChart(precipitation, parsedDates) {
         .duration(1000)
         .attr("d", linePrecipitation)
         .attr("fill", "none")
-        .attr("stroke", "steelblue")
+        .attr("stroke", "violet")
         .attr("stroke-width", 2);
 
     // Add hover interaction
