@@ -88,7 +88,6 @@ function populateDivs(staticGageInfo, dischargeInfo) {
           .join("div")
           .attr("class", "gage-summary")
           .html((d, i) => {
-              console.log(d);
               if (i == 0) {
                 return "<strong>Site Number:</strong> <br>" + d;
               }
@@ -109,7 +108,6 @@ function populateDivs(staticGageInfo, dischargeInfo) {
               .join("div")
               .attr("class", "gage-summary")
               .html((d, i) => {
-                  console.log(d);
                   if (i == 0) {
                     return "<strong>5th Percentile Discharge: </strong> <br>" + d.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " ft<sup>3</sup> / sec";
                   }

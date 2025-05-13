@@ -22,13 +22,18 @@ function dateToOffset(dateStr) {
   return Math.floor((date - baseDate) / (1000 * 60 * 60 * 24));
 }
 
-function syncFromSliders() { // always called whenever the date changes
+// Called whenever the date changes
+function syncFromSliders() { 
   let startOffset = parseInt(startSlider.value);
   let endOffset = parseInt(endSlider.value);
 
   // Clamp values to each other
-  if (startOffset > endOffset) startOffset = endOffset;
-  if (endOffset < startOffset) endOffset = startOffset;
+  if (startOffset > endOffset) {
+    startOffset = endOffset;
+  }
+  if (endOffset < startOffset) {
+    endOffset = startOffset;
+  }
 
   const startDate = offsetToDate(startOffset);
   const endDate = offsetToDate(endOffset);
@@ -42,8 +47,7 @@ function syncFromSliders() { // always called whenever the date changes
   startInput.value = formatDate(startDate);
   endInput.value = formatDate(endDate);
 
-  console.log("UPDATING LINE CHARTS")
-  updateLineCharts() // UPDATE LINE CHARTS
+  updateLineCharts();
 }
 
 function syncFromInputs() {
@@ -51,9 +55,12 @@ function syncFromInputs() {
   const endOffset = dateToOffset(endInput.value);
 
   // Clamp to allowed range
-  if (!isNaN(startOffset)) startSlider.value = Math.min(startOffset, endSlider.value);
-  if (!isNaN(endOffset)) endSlider.value = Math.max(endOffset, startSlider.value);
-
+  if (!isNaN(startOffset)) {
+    startSlider.value = Math.min(startOffset, endSlider.value);
+  }
+  if (!isNaN(endOffset)) {
+    endSlider.value = Math.max(endOffset, startSlider.value);
+  }
   syncFromSliders();
 }
 
@@ -61,6 +68,3 @@ startSlider.addEventListener("mouseup", syncFromSliders);
 endSlider.addEventListener("mouseup", syncFromSliders);
 startInput.addEventListener("change", syncFromInputs);
 endInput.addEventListener("change", syncFromInputs);
-
-// Initial load
-syncFromSliders();
