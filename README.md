@@ -1,7 +1,10 @@
 # River-Discharge-Forecasting
 Link to Data: [Here](https://drive.google.com/drive/folders/1xEUJQEgcSy5NSzGPgh-T3u0zRgrU3nbA?usp=sharing) 
-Link to Website: [Here](https://drive.google.com/drive/folders/1xEUJQEgcSy5NSzGPgh-T3u0zRgrU3nbA?usp=sharing) 
+
+Link to Website: [Here](https://johnr425.github.io/New-England-River-Analysis/) 
+
 Link to Screencast: [Here](https://drive.google.com/file/d/1KWwwFAnCdVtBjTAU89-Q2G_zi11LFJDH/view?usp=sharing) 
+
 
 Launch: Run live server in VSCode while viewing the index.html file.  
 
