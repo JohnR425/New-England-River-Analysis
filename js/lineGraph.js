@@ -1,10 +1,12 @@
 
+MARGIN = { top: 60, right: 30, bottom: 60, left: 60 };
 
 function initializeCharts() {
     setupLineCharts();
-
-    getStatsByGageID("01010000", "2010-01-01", "2010-12-31") // initialize with default dates
+    // initialize with default dates
+    getStatsByGageID("01010000", "2010-01-01", "2010-12-31") 
         .then(function (data) {
+            //Filtering out null values
             const validData = data.filter(e => e.mean_discharge != null && e.ppt != null);
 
             const discharges = validData.map(e => e.mean_discharge);
@@ -14,7 +16,7 @@ function initializeCharts() {
         });
 }
 
-// Main function to draw the line chart
+//Initializing all line chart components
 function setupLineCharts() {
     // Setup Discharge Chart
     const svgDischarge = d3.select("#line-graph-discharge")
@@ -22,23 +24,23 @@ function setupLineCharts() {
         .attr("width", 650)
         .attr("height", 300);
 
-    const margin = { top: 60, right: 30, bottom: 60, left: 60 };
     const width = +svgDischarge.attr("width");
     const height = +svgDischarge.attr("height");
-    const innerWidth = width - margin.left - margin.right;
-    const innerHeight = height - margin.top - margin.bottom;
+    const innerWidth = width - MARGIN.left - MARGIN.right;
+    const innerHeight = height - MARGIN.top - MARGIN.bottom;
 
     const gDischarge = svgDischarge.append("g")
-        .attr("transform", `translate(${margin.left},${margin.top})`)
+        .attr("transform", `translate(${MARGIN.left},${MARGIN.top})`)
         .attr("id", "chart-group-discharge");
 
     //  axis groups
     gDischarge.append("g").attr("class", "x-axis").attr("transform", `translate(0,${innerHeight})`);
     gDischarge.append("g").attr("class", "y-axis");
 
+    //Main Line
     gDischarge.append("path").attr("class", "line-discharge");
 
-    // Add line for top 5
+    //Shaded areas for each graph region
     gDischarge.append("path").attr("class", "area-top-5");
     gDischarge.append("path").attr("class", "area-bottom-5");
     gDischarge.append("path").attr("class", "area-top-10");
@@ -50,7 +52,7 @@ function setupLineCharts() {
     svgDischarge.append("text")
         .attr("class", "chart-title")
         .attr("x", width / 2)
-        .attr("y", margin.top / 2)
+        .attr("y", MARGIN.top / 2)
         .attr("text-anchor", "middle")
         .style("font-size", "16px")
         .style("font-weight", "bold")
@@ -79,7 +81,7 @@ function setupLineCharts() {
         .attr("height", 300);
 
     const gPrecipitation = svgPrecipitation.append("g")
-        .attr("transform", `translate(${margin.left},${margin.top})`)
+        .attr("transform", `translate(${MARGIN.left},${MARGIN.top})`)
         .attr("id", "chart-group-precipitation");
 
     // Add axis groups
@@ -93,7 +95,7 @@ function setupLineCharts() {
     svgPrecipitation.append("text")
         .attr("class", "chart-title")
         .attr("x", width / 2)
-        .attr("y", margin.top / 2)
+        .attr("y", MARGIN.top / 2)
         .attr("text-anchor", "middle")
         .style("font-size", "16px")
         .style("font-weight", "bold")
@@ -116,14 +118,14 @@ function setupLineCharts() {
         .text("Precipitation (mm)");
 }
 
-function updateDischargeChart(discharges, parsedDates, top_5,bottom_5,top_10,bottom_10,median_disc) {
+function updateDischargeChart(discharges, parsedDates, top_5,bottom_5, top_10, bottom_10, median_disc) {
     const svgDischarge = d3.select("#line-graph-discharge").select("svg");
     const gDischarge = svgDischarge.select("#chart-group-discharge");
 
     // Clear any previous "No Data Available" message
     svgDischarge.select(".no-data-text").remove();
 
-    // Check if the data is invalid (all nulls or empty)
+    // Check if the data is invalid (all nulls or empty or invalid dates entered)
     if (!discharges || discharges.every(d => d === null) || parsedDates.length <= 1) {
         svgDischarge.append("text")
             .attr("class", "no-data-text")
@@ -136,12 +138,11 @@ function updateDischargeChart(discharges, parsedDates, top_5,bottom_5,top_10,bot
             .text("[No Data Available]");
     }
     
-    // Otherwise Updata
-    const margin = { top: 60, right: 30, bottom: 60, left: 60 };
+    // Otherwise Update Discharge Graph
     const width = +svgDischarge.attr("width");
     const height = +svgDischarge.attr("height");
-    const innerWidth = width - margin.left - margin.right;
-    const innerHeight = height - margin.top - margin.bottom;
+    const innerWidth = width - MARGIN.left - MARGIN.right;
+    const innerHeight = height - MARGIN.top - MARGIN.bottom;
 
     const xScale = d3.scaleTime()
     .domain(d3.extent(parsedDates))
@@ -156,42 +157,45 @@ function updateDischargeChart(discharges, parsedDates, top_5,bottom_5,top_10,bot
         .x((d, i) => xScale(parsedDates[i]))
         .y(d => yScaleDischarge(d));
 
-    //THRESHOLD DATA
+    //Areas:
+    //Top boundaries
+    const area_top_5 = d3.area()
+                            .x(d => xScale(d.x))
+                            .y0(d => yScaleDischarge(d.y))
+                            .y1(() => yScaleDischarge(d3.max(discharges))); 
+    const area_top_10 = d3.area()
+                            .x(d => xScale(d.x))
+                            .y0(d => yScaleDischarge(d.y))
+                            .y1(() => yScaleDischarge(d3.max(discharges)));
+    // Bottom boundaries
+    const area_bottom_5 = d3.area()
+                            .x(d => xScale(d.x))
+                            .y0(d => yScaleDischarge(d.y))
+                            .y1(() => yScaleDischarge(0)); 
+    const area_bottom_10 = d3.area()
+                                .x(d => xScale(d.x))
+                                .y0(d => yScaleDischarge(d.y))
+                                .y1(() => yScaleDischarge(0));
+    //Median line
+    const line_median_discharge = d3.line()
+                                        .x(d => xScale(d.x))
+                                        .y(d => yScaleDischarge(d.y));
 
-    const makeConstantLine = (threshold) => [
-        { x: parsedDates[0], y: threshold },
-        { x: parsedDates[parsedDates.length - 1], y: threshold } 
-    ];
-
-    //areas:
-    const line_top_5 = d3.line().x(d => xScale(d.x)).y(d => yScaleDischarge(d.y));
-    const line_bottom_5 = d3.line().x(d => xScale(d.x)).y(d => yScaleDischarge(d.y));
-    const line_top_10 = d3.line().x(d => xScale(d.x)).y(d => yScaleDischarge(d.y));
-    const line_bottom_10 = d3.line().x(d => xScale(d.x)).y(d => yScaleDischarge(d.y));
-
-    const area_top_5 = d3.area().x(d => xScale(d.x)).y0(d => yScaleDischarge(d.y)).y1(() => yScaleDischarge(d3.max(discharges))); // Top boundary (max discharge)
-    const area_top_10 = d3.area().x(d => xScale(d.x)).y0(d => yScaleDischarge(d.y)).y1(() => yScaleDischarge(d3.max(discharges))); // Top boundary (max discharge)
-    const area_bottom_5 = d3.area().x(d => xScale(d.x)).y0(d => yScaleDischarge(d.y)).y1(() => yScaleDischarge(0)); // Bottom Boundary
-    const area_bottom_10 = d3.area().x(d => xScale(d.x)).y0(d => yScaleDischarge(d.y)).y1(() => yScaleDischarge(0)); // Bottom Boundary
-2010
-    const line_median_discharge = d3.line().x(d => xScale(d.x)).y(d => yScaleDischarge(d.y))
-
-    // END THRESHOLD DATA
     
     const dateSpan = (parsedDates[parsedDates.length - 1] - parsedDates[0]) / (1000 * 60 * 60 * 24); // in days
     let xFormat;
 
     if (dateSpan <= 180) {
-        xFormat = d3.timeFormat("%m/%d"); // e.g. Apr 30
+        xFormat = d3.timeFormat("%m/%d");
     } else if (dateSpan <= 365) {
-        xFormat = d3.timeFormat("%b '%y"); // e.g. Apr 2023
+        xFormat = d3.timeFormat("%b '%y");
     } else if (dateSpan <= 1460){
-        xFormat = d3.timeFormat("%m/%y"); // e.g. Feb 2024
+        xFormat = d3.timeFormat("%m/%y");
     } else {
-        xFormat = d3.timeFormat("%Y"); // e.g. Feb 2024
+        xFormat = d3.timeFormat("%Y");
     }
 
-    // Update axes
+    // Update discharge axes
     gDischarge.select(".x-axis")
         .transition()
         .duration(1000)
@@ -212,8 +216,10 @@ function updateDischargeChart(discharges, parsedDates, top_5,bottom_5,top_10,bot
         .attr("stroke", "darkorange")
         .attr("stroke-width", 2);
 
-
-    // update thresholds
+    const makeConstantLine = (threshold) => [
+        { x: parsedDates[0], y: threshold },
+        { x: parsedDates[parsedDates.length - 1], y: threshold } 
+    ];
 
     gDischarge.select(".area-top-5")
         .datum(makeConstantLine(top_5))
@@ -258,7 +264,6 @@ function updateDischargeChart(discharges, parsedDates, top_5,bottom_5,top_10,bot
         .attr("stroke-dasharray", "4 4");
 
         // HOVERING FUNCTION
-
         // Add hover interaction
         const hoverLineGroup = gDischarge.append("g")
             .attr("class", "hover-line-group")
@@ -294,19 +299,17 @@ function updateDischargeChart(discharges, parsedDates, top_5,bottom_5,top_10,bot
             .on("mouseout", () => hoverLineGroup.style("display", "none"))
             .on("mousemove", function (event) {
                 const [mouseX] = d3.pointer(event, this);
-                const xDate = xScale.invert(mouseX); // Get the date corresponding to the mouse position
+                const xDate = xScale.invert(mouseX);
                 const bisect = d3.bisector(d => d).left;
                 const index = bisect(parsedDates, xDate, 1);
-                const d0 = parsedDates[index - 1];
-                const d1 = parsedDates[index];
-                const closestDate = xDate - d0 > d1 - xDate ? d1 : d0;
+                const startDate = parsedDates[index - 1];
+                const endDate = parsedDates[index];
+                const closestDate = xDate - startDate > endDate - xDate ? endDate : startDate;
                 const closestIndex = parsedDates.indexOf(closestDate);
                 const closestValue = discharges[closestIndex];
 
                 const formatDate = d3.timeFormat("%-m/%-d/%y");
                 const formattedDate = formatDate(closestDate);
-                const formattedValue = closestValue % 1 === 0 ? parseInt(closestValue) : closestValue.toFixed(2);
-
 
                 // Update hover line position
                 hoverLineGroup.select(".hover-line")
@@ -323,9 +326,9 @@ function updateDischargeChart(discharges, parsedDates, top_5,bottom_5,top_10,bot
                 const estimatedTextWidth = labelText.length * 7;
                 const maxX = innerWidth;
 
+                //determine whether text label should appear to left or right depending on position within graph:
                 let anchor = "start";
                 let labelXAdjusted = labelX + labelPadding;
-
                 if (labelX + estimatedTextWidth + labelPadding > maxX) {
                 anchor = "end";
                 labelXAdjusted = labelX - labelPadding;
@@ -336,7 +339,6 @@ function updateDischargeChart(discharges, parsedDates, top_5,bottom_5,top_10,bot
                     .attr("y", labelY)
                     .attr("text-anchor", anchor)
                     .text(labelText);
-
             });
 }
 
@@ -347,7 +349,7 @@ function updatePrecipitationChart(precipitation, parsedDates) {
     // Clear any previous "No Data Available" message
     svgPrecipitation.select(".no-data-text").remove();
 
-    // Check if the data is invalid (all nulls or empty)
+    // Check if the data is invalid (all nulls or empty or invalid dates entered)
     if (!precipitation || precipitation.every(p => p === null) || parsedDates.length <= 1) {
         svgPrecipitation.append("text")
             .attr("class", "no-data-text")
@@ -359,11 +361,10 @@ function updatePrecipitationChart(precipitation, parsedDates) {
             .attr("fill", "gray") 
             .text("[No Data Available]");
     }
-    const margin = { top: 60, right: 30, bottom: 60, left: 60 };
     const width = +svgPrecipitation.attr("width");
     const height = +svgPrecipitation.attr("height");
-    const innerWidth = width - margin.left - margin.right;
-    const innerHeight = height - margin.top - margin.bottom;
+    const innerWidth = width - MARGIN.left - MARGIN.right;
+    const innerHeight = height - MARGIN.top - MARGIN.bottom;
 
     
     const xScale = d3.scaleTime()
@@ -382,14 +383,15 @@ function updatePrecipitationChart(precipitation, parsedDates) {
     const dateSpan = (parsedDates[parsedDates.length - 1] - parsedDates[0]) / (1000 * 60 * 60 * 24); // in days
     let xFormat;
 
+    //Different x-axis tick formatting based on dateSpan
     if (dateSpan <= 180) {
-        xFormat = d3.timeFormat("%m/%d"); // e.g. Apr 30
+        xFormat = d3.timeFormat("%m/%d");
     } else if (dateSpan <= 365) {
-        xFormat = d3.timeFormat("%b '%y"); // e.g. Apr 2023
+        xFormat = d3.timeFormat("%b '%y");
     } else if (dateSpan <= 1460){
-        xFormat = d3.timeFormat("%m/%y"); // e.g. Feb 2024
+        xFormat = d3.timeFormat("%m/%y");
     } else {
-        xFormat = d3.timeFormat("%Y"); // e.g. Feb 2024
+        xFormat = d3.timeFormat("%Y");
     }
     
     // Update axes
@@ -413,8 +415,6 @@ function updatePrecipitationChart(precipitation, parsedDates) {
         .attr("stroke", "steelblue")
         .attr("stroke-width", 2);
 
-    // HOVERING FUNCTION
-
     // Add hover interaction
     const hoverLineGroup = gPrecipitation.append("g")
     .attr("class", "hover-line-group")
@@ -424,7 +424,7 @@ function updatePrecipitationChart(precipitation, parsedDates) {
         .attr("class", "hover-line")
         .attr("y1", 0)
         .attr("y2", innerHeight)
-        .attr("stroke", "rgba(0, 0, 0, 0.64)")
+        .attr("stroke", "black")
         .attr("stroke-width", 1)
         .attr("stroke-dasharray", "4 4");
 
@@ -454,9 +454,9 @@ function updatePrecipitationChart(precipitation, parsedDates) {
             const xDate = xScale.invert(mouseX); // Get the date corresponding to the mouse position
             const bisect = d3.bisector(d => d).left;
             const index = bisect(parsedDates, xDate, 1);
-            const d0 = parsedDates[index - 1];
-            const d1 = parsedDates[index];
-            const closestDate = xDate - d0 > d1 - xDate ? d1 : d0;
+            const startDate = parsedDates[index - 1];
+            const endDate = parsedDates[index];
+            const closestDate = xDate - startDate > endDate - xDate ? endDate : startDate;
             const closestIndex = parsedDates.indexOf(closestDate);
             const closestValue = precipitation[closestIndex];
 
@@ -464,32 +464,33 @@ function updatePrecipitationChart(precipitation, parsedDates) {
             const formattedDate = formatDate(closestDate);
 
             // Update hover line position
-            hoverLineGroup.select(".hover-line")
-                .attr("x1", xScale(closestDate))
-                .attr("x2", xScale(closestDate));
+                hoverLineGroup.select(".hover-line")
+                    .attr("x1", xScale(closestDate))
+                    .attr("x2", xScale(closestDate));
 
-            const labelX = xScale(closestDate);
-            const labelY = yScalePrecipitation(closestValue);
-            const labelPadding = 5;
-            const labelText = `${closestValue.toFixed(2)}mm - ${formattedDate}`;
+                // Update hover label position and text
+                const labelX = xScale(closestDate);
+                const labelY = yScalePrecipitation(closestValue);
+                const labelPadding = 5;
+                const labelText = `${closestValue.toFixed(2)}mm - ${formattedDate}`;
 
-            // Estimate text width (~7px per character for 12px font)
-            const estimatedTextWidth = labelText.length * 7;
-            const maxX = innerWidth;
+                // Estimate text width (~7px per character for 12px font)
+                const estimatedTextWidth = labelText.length * 7;
+                const maxX = innerWidth;
 
-            let anchor = "start";
-            let labelXAdjusted = labelX + labelPadding;
+                //determine whether text label should appear to left or right depending on position within graph:
+                let anchor = "start";
+                let labelXAdjusted = labelX + labelPadding;
+                if (labelX + estimatedTextWidth + labelPadding > maxX) {
+                anchor = "end";
+                labelXAdjusted = labelX - labelPadding;
+                }
 
-            if (labelX + estimatedTextWidth + labelPadding > maxX) {
-            anchor = "end";
-            labelXAdjusted = labelX - labelPadding;
-            }
-
-            hoverLabel
-                .attr("x", labelXAdjusted)
-                .attr("y", labelY)
-                .attr("text-anchor", anchor)
-                .text(labelText);
+                hoverLabel
+                    .attr("x", labelXAdjusted)
+                    .attr("y", labelY)
+                    .attr("text-anchor", anchor)
+                    .text(labelText);
         });
 }
 
@@ -506,16 +507,16 @@ function updateLineCharts() {
         dataValues.push(d3.select(this).text());
     });
 
-    console.log("START DATE", startDate)
-    console.log("END DATE", endDate)
+    // console.log("START DATE", startDate)
+    // console.log("END DATE", endDate)
 
     // Ensure a gage is selected
     if (dataValues.length === 0) {
         console.warn("No gage selected.");
         return;
     }
+
     // Fetch data for the selected gage
-    
     getStatsByGageID(dataValues[0], startDate, endDate)
         .then(function (dateData) {
 
