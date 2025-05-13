@@ -1,5 +1,5 @@
 # River-Discharge-Forecasting
-Link to Data: [Here]([url](https://drive.google.com/drive/folders/1xEUJQEgcSy5NSzGPgh-T3u0zRgrU3nbA?usp=sharing)) 
+Link to Data: [Here](https://drive.google.com/drive/folders/1xEUJQEgcSy5NSzGPgh-T3u0zRgrU3nbA?usp=sharing) 
 
 Launch: Run live server in VSCode while viewing the index.html file.  
 
