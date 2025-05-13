@@ -1,3 +1,6 @@
+/**
+ * @returns Array of Objects, one for every gage point in stateName
+ */
 async function getGagesByState(stateName) { 
     let url = `https://db-worker.nwai.workers.dev/gages?state=${stateName}`
     let gageInfo = await fetch(url)
@@ -6,10 +9,13 @@ async function getGagesByState(stateName) {
             console.log("error:", error);
             return []
         })
-    console.log("Fetched", gageInfo.length, "gages from Database with parameter", stateName)
+    //console.log("Fetched", gageInfo.length, "gages from Database with parameter", stateName)
     return gageInfo
 }
 
+/**
+ * @returns Array of Objects, one for every database entry associated with gageID and between beginDate and endDate
+ */
 async function getStatsByGageID(gageID, beginDate, endDate) { 
     let url = `https://db-worker.nwai.workers.dev/data?site=${gageID}&begin=${beginDate}&end=${endDate}`
     let stats = await fetch(url)
@@ -18,11 +24,14 @@ async function getStatsByGageID(gageID, beginDate, endDate) {
             console.log("error:", error);
             return []
         })
-    console.log(stats)
-    console.log("Fetched", stats.length, "gage data entries from Database with siteID", gageID, "Date Range", beginDate, "to", endDate)
+    //console.log(stats)
+    //console.log("Fetched", stats.length, "gage data entries from Database with siteID", gageID, "Date Range", beginDate, "to", endDate)
     return stats
 }
 
+/**
+ * @returns Array of Objects, one for each database entry associated with gageID
+ */
 async function getGageInfoByGageID(gageID) { 
     let url = `https://db-worker.nwai.workers.dev/gageInfo?site_number=${gageID}`
     let stats = await fetch(url)
@@ -31,13 +40,12 @@ async function getGageInfoByGageID(gageID) {
             console.log("error:", error);
             return []
         })
-    console.log(stats)
-    console.log("Fetched", stats.length, "gage info from gage ID = ", gageID)
+    //console.log(stats)
+    //console.log("Fetched", stats.length, "gage info from gage ID = ", gageID)
     return (stats.length > 0)? stats[0] : null
 }
 
 /**
- * 
  * @returns Array of States
  */
 async function getStates() { 
@@ -48,27 +56,6 @@ async function getStates() {
             console.log("error:", error);
             return []
         })
-    console.log("Fetched", data.length, "states from Database")
+    //console.log("Fetched", data.length, "states from Database")
     return data.map(entry => entry.state)
 }
-
-// RETURNS
-
-// {
-//     site_number: 1010070,
-//     state: 'Maine',
-//     latitude: 46.89388889,
-//     longitude: -69.7516667,
-//     elevation: 1073,
-//     site_name: 'Big Black River near Depot Mtn, Maine',
-//     date: '2010-01-07',
-//     mean_discharge: 110,
-//     ppt: 0.02,
-//     tmean: 23.7
-//   }
-
-// fetch('https://db-worker.nwai.workers.dev/states').then(res => res.json()).then(console.log);
-// fetch('https://db-worker.nwai.workers.dev/gages?state=Massachusetts').then(res => res.json()).then(console.log);
-// fetch('https://db-worker.nwai.workers.dev/data?site=1010070&begin=2010-01-01&end=2010-01-07')
-//   .then(res => res.json())
-//   .then(console.log);

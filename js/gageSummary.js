@@ -1,5 +1,5 @@
 function setupGageSummary(data) {
-    const textDiv = d3.select("#gage-summary");
+    const textDiv = d3.select("#gage-summary-div");
 
     console.log(Object.entries(data));
     let dataArr = Object.entries(data);
